@@ -1,0 +1,1162 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ヴァルヴレイヴ2 記録MVP</title>
+  <style>
+
+body{
+  padding: 12px;
+}
+
+header, main{
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+input, select, textarea, button{
+  font-size: 16px;
+}
+
+table{
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tabs, .tab-buttons, .nav-tabs{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+@media (max-width: 768px){
+  body{
+    padding: 8px;
+  }
+
+  table{
+    font-size: 14px;
+  }
+
+  th, td{
+    padding: 6px 8px;
+  }
+}
+    :root{
+      --bg:#f6f7fb;
+      --card:#ffffff;
+      --text:#1f2937;
+      --muted:#6b7280;
+      --line:#d8dee9;
+      --accent:#2563eb;
+      --accent2:#1d4ed8;
+      --danger:#dc2626;
+      --ok:#059669;
+      --shadow:0 8px 24px rgba(0,0,0,.06);
+      --radius:14px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+      background:var(--bg);
+      color:var(--text);
+    }
+    header{
+      position:sticky;
+      top:0;
+      z-index:10;
+      background:#fff;
+      border-bottom:1px solid var(--line);
+      box-shadow:0 2px 10px rgba(0,0,0,.03);
+    }
+    .wrap{max-width:1200px;margin:0 auto;padding:16px}
+    .title{
+      display:flex;
+      flex-wrap:wrap;
+      align-items:baseline;
+      gap:12px;
+      margin-bottom:12px;
+    }
+    .title h1{font-size:20px;margin:0}
+    .title .sub{color:var(--muted);font-size:13px}
+    .tabs{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    .tab-btn{
+      border:1px solid var(--line);
+      background:#fff;
+      padding:10px 14px;
+      border-radius:999px;
+      cursor:pointer;
+      color:var(--text);
+      font-weight:600;
+    }
+    .tab-btn.active{
+      background:var(--accent);
+      color:#fff;
+      border-color:var(--accent);
+    }
+    main{max-width:1200px;margin:0 auto;padding:16px}
+    .panel{display:none}
+    .panel.active{display:block}
+    .grid{
+      display:grid;
+      gap:16px;
+    }
+    .grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+    @media (max-width:900px){
+      .grid.two,.grid.three{grid-template-columns:1fr}
+    }
+    .card{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:16px;
+    }
+    .card h2,.card h3{
+      margin:0 0 12px;
+      font-size:16px;
+    }
+    .muted{color:var(--muted);font-size:13px}
+    label{display:block;font-size:13px;font-weight:700;margin:0 0 6px}
+    input,select,textarea{
+      width:100%;
+      border:1px solid var(--line);
+      border-radius:10px;
+      padding:10px 12px;
+      font:inherit;
+      background:#fff;
+      color:var(--text);
+    }
+    textarea{min-height:92px;resize:vertical}
+    .row{
+      display:grid;
+      gap:12px;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+    }
+    .row.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+    @media (max-width:700px){
+      .row,.row.three{grid-template-columns:1fr}
+    }
+    .actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:12px;
+    }
+    button.primary{
+      background:var(--accent);
+      color:#fff;
+      border:1px solid var(--accent);
+      padding:10px 14px;
+      border-radius:10px;
+      cursor:pointer;
+      font-weight:700;
+    }
+    button.secondary{
+      background:#fff;
+      color:var(--text);
+      border:1px solid var(--line);
+      padding:10px 14px;
+      border-radius:10px;
+      cursor:pointer;
+      font-weight:700;
+    }
+    button.danger{
+      background:#fff;
+      color:var(--danger);
+      border:1px solid #f3b4b4;
+      padding:10px 14px;
+      border-radius:10px;
+      cursor:pointer;
+      font-weight:700;
+    }
+    button.small{
+      padding:6px 10px;
+      border-radius:8px;
+      font-size:12px;
+    }
+    .stats{
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:12px;
+    }
+    @media (max-width:900px){
+      .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+    }
+    @media (max-width:520px){
+      .stats{grid-template-columns:1fr}
+    }
+    .stat{
+      background:#f8fafc;
+      border:1px solid var(--line);
+      border-radius:12px;
+      padding:14px;
+    }
+    .stat .name{color:var(--muted);font-size:12px;margin-bottom:6px}
+    .stat .value{font-size:24px;font-weight:800}
+    .stat .note{font-size:12px;color:var(--muted);margin-top:4px}
+    .filters{
+      display:grid;
+      gap:12px;
+      grid-template-columns:repeat(5,minmax(0,1fr));
+    }
+    @media (max-width:1100px){
+      .filters{grid-template-columns:repeat(2,minmax(0,1fr))}
+    }
+    @media (max-width:520px){
+      .filters{grid-template-columns:1fr}
+    }
+    table{
+      width:100%;
+      border-collapse:collapse;
+      background:#fff;
+      border-radius:12px;
+      overflow:hidden;
+    }
+    th,td{
+      border-bottom:1px solid var(--line);
+      padding:10px 8px;
+      text-align:left;
+      vertical-align:top;
+      font-size:13px;
+    }
+    th{
+      background:#f8fafc;
+      user-select:none;
+      cursor:pointer;
+      white-space:nowrap;
+    }
+    tbody tr:hover{background:#fafcff}
+    .right{text-align:right}
+    .center{text-align:center}
+    .badge{
+      display:inline-block;
+      padding:3px 8px;
+      border-radius:999px;
+      background:#eef2ff;
+      color:#4338ca;
+      font-size:12px;
+      font-weight:700;
+    }
+    .good{color:var(--ok);font-weight:700}
+    .bad{color:var(--danger);font-weight:700}
+    .list-tools{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:space-between;
+      margin-bottom:12px;
+    }
+    .foot{
+      color:var(--muted);
+      font-size:12px;
+      margin-top:8px;
+    }
+    .note-box{
+      padding:12px;
+      background:#fffbeb;
+      border:1px solid #fde68a;
+      border-radius:12px;
+      color:#92400e;
+      font-size:13px;
+      line-height:1.7;
+    }
+    .mini-table{
+      width:100%;
+      border-collapse:collapse;
+    }
+    .mini-table th,.mini-table td{
+      padding:8px;
+      font-size:13px;
+    }
+    .mini-table th{background:#f8fafc}
+    .nowrap{white-space:nowrap}
+  </style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="title">
+      <h1>ヴァルヴレイヴ2 記録MVP</h1>
+      <div class="sub">新橋UNO / Lパチスロ 革命機ヴァルヴレイヴ2 / 0500〜0509</div>
+    </div>
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="input">入力</button>
+      <button class="tab-btn" data-tab="list">一覧</button>
+      <button class="tab-btn" data-tab="analysis">分析</button>
+      <button class="tab-btn" data-tab="save">保存</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="panel active" id="tab-input">
+    <div class="grid two">
+      <div class="card">
+        <h2>入力</h2>
+        <form id="recordForm">
+          <div class="row">
+            <div>
+              <label>日付</label>
+              <input type="date" id="date" required />
+            </div>
+            <div>
+              <label>台番号</label>
+              <select id="unitNo" required></select>
+            </div>
+          </div>
+
+          <div class="row three" style="margin-top:12px;">
+            <div>
+              <label>ボーナス</label>
+              <input type="number" id="bonus" min="0" step="1" value="0" />
+            </div>
+            <div>
+              <label>BIG</label>
+              <input type="number" id="big" min="0" step="1" value="0" />
+            </div>
+            <div>
+              <label>REG</label>
+              <input type="number" id="reg" min="0" step="1" value="0" />
+            </div>
+          </div>
+
+          <div class="row three" style="margin-top:12px;">
+            <div>
+              <label>総ゲーム数</label>
+              <input type="number" id="totalGames" min="0" step="1" value="0" />
+            </div>
+            <div>
+              <label>差枚</label>
+              <input type="number" id="difference" step="1" value="0" />
+            </div>
+            <div>
+              <label>店名</label>
+              <input type="text" id="storeName" readonly />
+            </div>
+          </div>
+
+          <div style="margin-top:12px;">
+            <label>メモ</label>
+            <textarea id="memo" placeholder="例：イベント日、角台、朝一動きあり など"></textarea>
+          </div>
+
+          <div class="actions">
+            <button class="primary" type="submit">保存する</button>
+            <button class="secondary" type="button" id="clearFormBtn">入力をクリア</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="card">
+        <h2>使い方</h2>
+        <div class="note-box">
+          1. 日付と台番号を選ぶ<br>
+          2. ボーナス・BIG・REG・総ゲーム数・差枚を入れる<br>
+          3. 保存する<br><br>
+          迷ったら、まずは「差枚」と「総ゲーム数」だけでも大丈夫です。
+        </div>
+        <div style="height:12px"></div>
+        <div class="card" style="padding:12px;background:#f8fafc;">
+          <div class="muted">登録状況</div>
+          <div id="quickStatus" style="font-size:24px;font-weight:800;margin-top:6px;">0件</div>
+          <div class="foot">保存すると一覧・分析に反映されます。</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" id="tab-list">
+    <div class="card">
+      <div class="list-tools">
+        <div>
+          <h2 style="margin:0 0 6px;">一覧</h2>
+          <div class="muted">並び替え・絞り込みができます。</div>
+        </div>
+        <div class="actions" style="margin:0;">
+          <button class="secondary" type="button" id="reloadListBtn">再表示</button>
+        </div>
+      </div>
+
+      <div class="filters" style="margin-bottom:12px;">
+        <div>
+          <label>開始日</label>
+          <input type="date" id="filterFrom" />
+        </div>
+        <div>
+          <label>終了日</label>
+          <input type="date" id="filterTo" />
+        </div>
+        <div>
+          <label>台番号</label>
+          <select id="filterUnit">
+            <option value="">すべて</option>
+          </select>
+        </div>
+        <div>
+          <label>キーワード</label>
+          <input type="text" id="filterKeyword" placeholder="メモ検索" />
+        </div>
+        <div>
+          <label>表示件数</label>
+          <select id="filterLimit">
+            <option value="50">50件</option>
+            <option value="100">100件</option>
+            <option value="500">500件</option>
+            <option value="9999">全部</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="overflow:auto;">
+        <table>
+          <thead>
+            <tr>
+              <th data-sort="date">日付</th>
+              <th data-sort="unitNo">台番号</th>
+              <th data-sort="bonus" class="right">ボーナス</th>
+              <th data-sort="big" class="right">BIG</th>
+              <th data-sort="reg" class="right">REG</th>
+              <th data-sort="totalGames" class="right">総G</th>
+              <th data-sort="difference" class="right">差枚</th>
+              <th>メモ</th>
+              <th class="center">操作</th>
+            </tr>
+          </thead>
+          <tbody id="recordTableBody"></tbody>
+        </table>
+      </div>
+      <div class="foot" id="listCount"></div>
+    </div>
+  </section>
+
+  <section class="panel" id="tab-analysis">
+    <div class="grid" style="gap:16px;">
+      <div class="card">
+        <h2>分析</h2>
+        <div class="stats" id="summaryStats"></div>
+      </div>
+
+      <div class="grid two">
+        <div class="card">
+          <h3>強い日付</h3>
+          <div style="overflow:auto;">
+            <table class="mini-table">
+              <thead>
+                <tr>
+                  <th>日付</th>
+                  <th class="right">台数</th>
+                  <th class="right">平均差枚</th>
+                </tr>
+              </thead>
+              <tbody id="strongDaysBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>強い曜日</h3>
+          <div style="overflow:auto;">
+            <table class="mini-table">
+              <thead>
+                <tr>
+                  <th>曜日</th>
+                  <th class="right">台数</th>
+                  <th class="right">平均差枚</th>
+                </tr>
+              </thead>
+              <tbody id="strongWeekdaysBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>今日の狙い台ランキング</h3>
+        <div class="muted" style="margin-bottom:10px;">
+          総合平均・直近3回・強い曜日・イベント日の傾向をまとめて並べています。
+        </div>
+        <div style="overflow:auto;">
+          <table class="mini-table">
+            <thead>
+              <tr>
+                <th>順位</th>
+                <th>台番号</th>
+                <th class="right">件数</th>
+                <th class="right">総合平均</th>
+                <th class="right">直近3回</th>
+                <th class="right">強い曜日</th>
+                <th class="right">イベント日平均</th>
+                <th class="right">スコア</th>
+              </tr>
+            </thead>
+            <tbody id="targetRankBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" id="tab-save">
+    <div class="grid two">
+      <div class="card">
+        <h2>保存・出力</h2>
+        <div class="actions">
+          <button class="primary" type="button" id="exportCsvBtn">CSVを書き出す</button>
+          <label class="secondary" style="display:inline-flex;align-items:center;gap:8px;cursor:pointer;">
+            CSVを読み込む
+            <input type="file" id="importFile" accept=".csv" style="display:none;" />
+          </label>
+          <button class="danger" type="button" id="resetBtn">全データを消す</button>
+        </div>
+        <div class="foot" style="margin-top:10px;">
+          CSVはダウンロードされます。読み込みは上書きではなく「追加」です。
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>イベント日設定</h2>
+        <div class="muted">ここに日付を入れると、分析の「イベント日平均」に使います。</div>
+        <div style="height:10px"></div>
+        <label>イベント日（カンマ区切り or 改行）</label>
+        <textarea id="eventDates" placeholder="例：2026-07-01,2026-07-07"></textarea>
+        <div class="actions">
+          <button class="primary" type="button" id="saveSettingsBtn">設定を保存</button>
+        </div>
+        <div class="foot">日付は <span class="nowrap">YYYY-MM-DD</span> で入れてください。</div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+(() => {
+  const LS_KEYS = {
+    stores: 'stores',
+    machines: 'machines',
+    units: 'units',
+    records: 'records',
+    app_settings: 'app_settings',
+    analysis_cache: 'analysis_cache'
+  };
+
+  const STORE = { id: 'shinbashi-uno', name: '新橋UNO' };
+  const MACHINE = { id: 'vvv2', name: 'Lパチスロ 革命機ヴァルヴレイヴ2' };
+  const UNITS = Array.from({ length: 10 }, (_, i) => {
+    const no = String(500 + i);
+    const padded = String(500 + i).padStart(4, '0');
+    return {
+      id: `${STORE.id}-${MACHINE.id}-${padded}`,
+      storeId: STORE.id,
+      machineId: MACHINE.id,
+      no: padded,
+      name: padded
+    };
+  });
+
+  const WEEKDAYS = ['日', '月', '火', '水', '木', '金', '土'];
+
+  const els = {
+    tabs: [...document.querySelectorAll('.tab-btn')],
+    panels: {
+      input: document.getElementById('tab-input'),
+      list: document.getElementById('tab-list'),
+      analysis: document.getElementById('tab-analysis'),
+      save: document.getElementById('tab-save')
+    },
+    form: document.getElementById('recordForm'),
+    date: document.getElementById('date'),
+    unitNo: document.getElementById('unitNo'),
+    bonus: document.getElementById('bonus'),
+    big: document.getElementById('big'),
+    reg: document.getElementById('reg'),
+    totalGames: document.getElementById('totalGames'),
+    difference: document.getElementById('difference'),
+    memo: document.getElementById('memo'),
+    storeName: document.getElementById('storeName'),
+    quickStatus: document.getElementById('quickStatus'),
+    clearFormBtn: document.getElementById('clearFormBtn'),
+
+    filterFrom: document.getElementById('filterFrom'),
+    filterTo: document.getElementById('filterTo'),
+    filterUnit: document.getElementById('filterUnit'),
+    filterKeyword: document.getElementById('filterKeyword'),
+    filterLimit: document.getElementById('filterLimit'),
+    recordTableBody: document.getElementById('recordTableBody'),
+    listCount: document.getElementById('listCount'),
+    reloadListBtn: document.getElementById('reloadListBtn'),
+
+    summaryStats: document.getElementById('summaryStats'),
+    strongDaysBody: document.getElementById('strongDaysBody'),
+    strongWeekdaysBody: document.getElementById('strongWeekdaysBody'),
+    targetRankBody: document.getElementById('targetRankBody'),
+
+    exportCsvBtn: document.getElementById('exportCsvBtn'),
+    importFile: document.getElementById('importFile'),
+    resetBtn: document.getElementById('resetBtn'),
+    eventDates: document.getElementById('eventDates'),
+    saveSettingsBtn: document.getElementById('saveSettingsBtn'),
+  };
+
+  const state = {
+    sortField: 'date',
+    sortDir: 'desc'
+  };
+
+  function todayStr() {
+    const d = new Date();
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+  }
+
+  function safeJSONParse(v, fallback) {
+    try { return JSON.parse(v); } catch { return fallback; }
+  }
+
+  function ensureSeedData() {
+    if (!localStorage.getItem(LS_KEYS.stores)) {
+      localStorage.setItem(LS_KEYS.stores, JSON.stringify([STORE]));
+    }
+    if (!localStorage.getItem(LS_KEYS.machines)) {
+      localStorage.setItem(LS_KEYS.machines, JSON.stringify([MACHINE]));
+    }
+    if (!localStorage.getItem(LS_KEYS.units)) {
+      localStorage.setItem(LS_KEYS.units, JSON.stringify(UNITS));
+    }
+    if (!localStorage.getItem(LS_KEYS.records)) {
+      localStorage.setItem(LS_KEYS.records, JSON.stringify([]));
+    }
+    if (!localStorage.getItem(LS_KEYS.app_settings)) {
+      localStorage.setItem(LS_KEYS.app_settings, JSON.stringify({ eventDates: [] }));
+    }
+    if (!localStorage.getItem(LS_KEYS.analysis_cache)) {
+      localStorage.setItem(LS_KEYS.analysis_cache, JSON.stringify({}));
+    }
+  }
+
+  function getStores() {
+    return safeJSONParse(localStorage.getItem(LS_KEYS.stores), []);
+  }
+  function getMachines() {
+    return safeJSONParse(localStorage.getItem(LS_KEYS.machines), []);
+  }
+  function getUnits() {
+    return safeJSONParse(localStorage.getItem(LS_KEYS.units), []);
+  }
+  function getRecords() {
+    return safeJSONParse(localStorage.getItem(LS_KEYS.records), []);
+  }
+  function setRecords(records) {
+    localStorage.setItem(LS_KEYS.records, JSON.stringify(records));
+  }
+  function getSettings() {
+    const s = safeJSONParse(localStorage.getItem(LS_KEYS.app_settings), { eventDates: [] });
+    if (Array.isArray(s.eventDates)) return s;
+    return { eventDates: [] };
+  }
+  function setSettings(settings) {
+    localStorage.setItem(LS_KEYS.app_settings, JSON.stringify(settings));
+  }
+
+  function normalizeEventDates(text) {
+    return [...new Set(
+      String(text || '')
+        .split(/[\n,，\s]+/g)
+        .map(v => v.trim())
+        .filter(Boolean)
+    )];
+  }
+
+  function unitLabel(no) {
+    return no;
+  }
+
+  function weekdayName(dateStr) {
+    const d = new Date(dateStr + 'T00:00:00');
+    return WEEKDAYS[d.getDay()];
+  }
+
+  function fmtNum(n) {
+    const x = Number(n || 0);
+    return x.toLocaleString('ja-JP');
+  }
+
+  function csvEscape(value) {
+    const s = String(value ?? '');
+    if (/[",\n\r]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
+    return s;
+  }
+
+  function toCSV(rows) {
+    return rows.map(row => row.map(csvEscape).join(',')).join('\r\n');
+  }
+
+  function parseCSV(text) {
+    const rows = [];
+    let row = [];
+    let field = '';
+    let inQuotes = false;
+
+    for (let i = 0; i < text.length; i++) {
+      const ch = text[i];
+      const next = text[i + 1];
+
+      if (ch === '"') {
+        if (inQuotes && next === '"') {
+          field += '"';
+          i++;
+        } else {
+          inQuotes = !inQuotes;
+        }
+      } else if (ch === ',' && !inQuotes) {
+        row.push(field);
+        field = '';
+      } else if ((ch === '\n' || ch === '\r') && !inQuotes) {
+        if (ch === '\r' && next === '\n') i++;
+        row.push(field);
+        rows.push(row);
+        row = [];
+        field = '';
+      } else {
+        field += ch;
+      }
+    }
+    if (field !== '' || row.length) {
+      row.push(field);
+      rows.push(row);
+    }
+    return rows;
+  }
+
+  function switchTab(tab) {
+    els.tabs.forEach(btn => btn.classList.toggle('active', btn.dataset.tab === tab));
+    Object.entries(els.panels).forEach(([key, panel]) => panel.classList.toggle('active', key === tab));
+    if (tab === 'list') renderList();
+    if (tab === 'analysis') renderAnalysis();
+    if (tab === 'save') renderSettings();
+  }
+
+  function getFilteredRecords() {
+    const records = getRecords();
+    const from = els.filterFrom.value;
+    const to = els.filterTo.value;
+    const unitNo = els.filterUnit.value;
+    const kw = els.filterKeyword.value.trim().toLowerCase();
+
+    return records.filter(r => {
+      if (from && r.date < from) return false;
+      if (to && r.date > to) return false;
+      if (unitNo && r.unitNo !== unitNo) return false;
+      if (kw) {
+        const memo = String(r.memo || '').toLowerCase();
+        if (!memo.includes(kw)) return false;
+      }
+      return true;
+    });
+  }
+
+  function sortRecords(rows) {
+    const field = state.sortField;
+    const dir = state.sortDir === 'asc' ? 1 : -1;
+
+    return [...rows].sort((a, b) => {
+      let va = a[field];
+      let vb = b[field];
+      if (field === 'date' || field === 'unitNo' || field === 'memo') {
+        va = String(va ?? '');
+        vb = String(vb ?? '');
+        return va.localeCompare(vb, 'ja') * dir;
+      }
+      va = Number(va || 0);
+      vb = Number(vb || 0);
+      return (va - vb) * dir;
+    });
+  }
+
+  function renderQuickStatus() {
+    const count = getRecords().length;
+    els.quickStatus.textContent = `${count}件`;
+  }
+
+  function renderUnitOptions() {
+    const units = getUnits();
+    els.unitNo.innerHTML = units.map(u => `<option value="${u.no}">${unitLabel(u.no)}</option>`).join('');
+    els.filterUnit.innerHTML = `<option value="">すべて</option>` + units.map(u => `<option value="${u.no}">${unitLabel(u.no)}</option>`).join('');
+  }
+
+  function renderList() {
+    const rows = sortRecords(getFilteredRecords());
+    const limit = Number(els.filterLimit.value || 50);
+    const shown = rows.slice(0, limit);
+
+    els.recordTableBody.innerHTML = shown.length ? shown.map((r, idx) => `
+      <tr>
+        <td class="nowrap">${r.date}</td>
+        <td class="nowrap"><span class="badge">${r.unitNo}</span></td>
+        <td class="right">${fmtNum(r.bonus)}</td>
+        <td class="right">${fmtNum(r.big)}</td>
+        <td class="right">${fmtNum(r.reg)}</td>
+        <td class="right">${fmtNum(r.totalGames)}</td>
+        <td class="right ${Number(r.difference) >= 0 ? 'good' : 'bad'}">${Number(r.difference) >= 0 ? '+' : ''}${fmtNum(r.difference)}</td>
+        <td>${escapeHTML(r.memo || '')}</td>
+        <td class="center">
+          <button class="danger small" data-del="${r.id}">削除</button>
+        </td>
+      </tr>
+    `).join('') : `<tr><td colspan="9" class="muted">データがありません。</td></tr>`;
+
+    els.listCount.textContent = `表示 ${shown.length} 件 / 全 ${rows.length} 件`;
+
+    els.recordTableBody.querySelectorAll('[data-del]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.del;
+        if (!confirm('この記録を削除しますか？')) return;
+        const updated = getRecords().filter(r => r.id !== id);
+        setRecords(updated);
+        renderAll();
+      });
+    });
+  }
+
+  function escapeHTML(text) {
+    return String(text)
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;');
+  }
+
+  function groupBy(arr, keyFn) {
+    const map = new Map();
+    arr.forEach(item => {
+      const key = keyFn(item);
+      if (!map.has(key)) map.set(key, []);
+      map.get(key).push(item);
+    });
+    return map;
+  }
+
+  function avg(nums) {
+    if (!nums.length) return 0;
+    return nums.reduce((a, b) => a + b, 0) / nums.length;
+  }
+
+  function calcUnitStats(records, eventDates) {
+    const byDateDesc = [...records].sort((a, b) => b.date.localeCompare(a.date));
+    const overallAvg = avg(records.map(r => Number(r.difference || 0)));
+    const recent3Avg = avg(byDateDesc.slice(0, 3).map(r => Number(r.difference || 0)));
+    const eventRecs = eventDates.length ? records.filter(r => eventDates.includes(r.date)) : [];
+    const eventDayAvg = eventRecs.length ? avg(eventRecs.map(r => Number(r.difference || 0))) : 0;
+
+    const weekdayMap = new Map();
+    records.forEach(r => {
+      const w = weekdayName(r.date);
+      if (!weekdayMap.has(w)) weekdayMap.set(w, []);
+      weekdayMap.get(w).push(Number(r.difference || 0));
+    });
+    let bestWeekday = '-';
+    let bestWeekdayAvg = 0;
+    for (const [w, vals] of weekdayMap.entries()) {
+      const a = avg(vals);
+      if (bestWeekday === '-' || a > bestWeekdayAvg) {
+        bestWeekday = w;
+        bestWeekdayAvg = a;
+      }
+    }
+
+    let score = overallAvg * 0.45 + recent3Avg * 0.35 + bestWeekdayAvg * 0.15 + eventDayAvg * 0.25;
+    if (records.length < 3) score -= 30;
+    else if (records.length < 5) score -= 12;
+    if (recent3Avg < 0) score += recent3Avg * 0.2;
+
+    return {
+      count: records.length,
+      overallAvg,
+      recent3Avg,
+      eventDayAvg,
+      bestWeekday,
+      bestWeekdayAvg,
+      score
+    };
+  }
+
+  function renderAnalysis() {
+    const records = getRecords();
+    const settings = getSettings();
+    const eventDates = settings.eventDates || [];
+
+    if (!records.length) {
+      els.summaryStats.innerHTML = `
+        <div class="stat"><div class="name">件数</div><div class="value">0</div><div class="note">まだデータがありません</div></div>
+        <div class="stat"><div class="name">総合平均</div><div class="value">0</div><div class="note">差枚の平均</div></div>
+        <div class="stat"><div class="name">直近3回</div><div class="value">0</div><div class="note">台全体</div></div>
+        <div class="stat"><div class="name">イベント日平均</div><div class="value">0</div><div class="note">設定があれば反映</div></div>
+      `;
+      els.strongDaysBody.innerHTML = `<tr><td colspan="3" class="muted">データがありません。</td></tr>`;
+      els.strongWeekdaysBody.innerHTML = `<tr><td colspan="3" class="muted">データがありません。</td></tr>`;
+      els.targetRankBody.innerHTML = `<tr><td colspan="8" class="muted">データがありません。</td></tr>`;
+      return;
+    }
+
+    const totalCount = records.length;
+    const overallAvg = avg(records.map(r => Number(r.difference || 0)));
+    const recent3Avg = avg([...records].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 3).map(r => Number(r.difference || 0)));
+    const eventRecs = eventDates.length ? records.filter(r => eventDates.includes(r.date)) : [];
+    const eventDayAvg = eventRecs.length ? avg(eventRecs.map(r => Number(r.difference || 0))) : 0;
+    const bestRecord = [...records].sort((a, b) => Number(b.difference || 0) - Number(a.difference || 0))[0];
+    const bestDayGroup = [...groupBy(records, r => r.date).entries()]
+      .map(([date, rows]) => ({ date, count: rows.length, avg: avg(rows.map(r => Number(r.difference || 0))) }))
+      .sort((a, b) => b.avg - a.avg)[0];
+
+    els.summaryStats.innerHTML = `
+      <div class="stat"><div class="name">件数</div><div class="value">${fmtNum(totalCount)}</div><div class="note">登録済みデータ</div></div>
+      <div class="stat"><div class="name">総合平均</div><div class="value ${overallAvg >= 0 ? 'good' : 'bad'}">${overallAvg >= 0 ? '+' : ''}${fmtNum(Math.round(overallAvg))}</div><div class="note">全記録の差枚平均</div></div>
+      <div class="stat"><div class="name">直近3回</div><div class="value ${recent3Avg >= 0 ? 'good' : 'bad'}">${recent3Avg >= 0 ? '+' : ''}${fmtNum(Math.round(recent3Avg))}</div><div class="note">最新3件の平均</div></div>
+      <div class="stat"><div class="name">イベント日平均</div><div class="value ${eventDayAvg >= 0 ? 'good' : 'bad'}">${eventDates.length ? (eventDayAvg >= 0 ? '+' : '') + fmtNum(Math.round(eventDayAvg)) : '-'}</div><div class="note">${eventDates.length ? '設定日だけ集計' : 'イベント日未設定'}</div></div>
+    `;
+
+    const dayGroups = [...groupBy(records, r => r.date).entries()]
+      .map(([date, rows]) => ({
+        date,
+        count: rows.length,
+        avg: avg(rows.map(r => Number(r.difference || 0)))
+      }))
+      .sort((a, b) => b.avg - a.avg)
+      .slice(0, 10);
+
+    els.strongDaysBody.innerHTML = dayGroups.length ? dayGroups.map(row => `
+      <tr>
+        <td class="nowrap">${row.date}</td>
+        <td class="right">${fmtNum(row.count)}</td>
+        <td class="right ${row.avg >= 0 ? 'good' : 'bad'}">${row.avg >= 0 ? '+' : ''}${fmtNum(Math.round(row.avg))}</td>
+      </tr>
+    `).join('') : `<tr><td colspan="3" class="muted">データがありません。</td></tr>`;
+
+    const weekdayGroups = WEEKDAYS.map((w, i) => {
+      const vals = records.filter(r => new Date(r.date + 'T00:00:00').getDay() === i).map(r => Number(r.difference || 0));
+      return { weekday: w, count: vals.length, avg: vals.length ? avg(vals) : 0 };
+    }).sort((a, b) => b.avg - a.avg);
+
+    els.strongWeekdaysBody.innerHTML = weekdayGroups.map(row => `
+      <tr>
+        <td>${row.weekday}曜</td>
+        <td class="right">${fmtNum(row.count)}</td>
+        <td class="right ${row.avg >= 0 ? 'good' : 'bad'}">${row.avg >= 0 ? '+' : ''}${fmtNum(Math.round(row.avg))}</td>
+      </tr>
+    `).join('');
+
+    const unitMap = groupBy(records, r => r.unitNo);
+    const rankRows = [...unitMap.entries()].map(([unitNo, rows]) => {
+      const stats = calcUnitStats(rows, eventDates);
+      return { unitNo, ...stats };
+    }).sort((a, b) => b.score - a.score);
+
+    els.targetRankBody.innerHTML = rankRows.map((r, idx) => `
+      <tr>
+        <td class="center">${idx + 1}</td>
+        <td class="nowrap"><span class="badge">${r.unitNo}</span></td>
+        <td class="right">${fmtNum(r.count)}</td>
+        <td class="right ${r.overallAvg >= 0 ? 'good' : 'bad'}">${r.overallAvg >= 0 ? '+' : ''}${fmtNum(Math.round(r.overallAvg))}</td>
+        <td class="right ${r.recent3Avg >= 0 ? 'good' : 'bad'}">${r.recent3Avg >= 0 ? '+' : ''}${fmtNum(Math.round(r.recent3Avg))}</td>
+        <td class="right ${r.bestWeekdayAvg >= 0 ? 'good' : 'bad'}">${r.bestWeekday}${r.bestWeekdayAvg >= 0 ? ' +' : ' '}${fmtNum(Math.round(r.bestWeekdayAvg))}</td>
+        <td class="right ${r.eventDayAvg >= 0 ? 'good' : 'bad'}">${eventDates.length ? ((r.eventDayAvg >= 0 ? '+' : '') + fmtNum(Math.round(r.eventDayAvg))) : '-'}</td>
+        <td class="right ${r.score >= 0 ? 'good' : 'bad'}">${r.score >= 0 ? '+' : ''}${fmtNum(Math.round(r.score))}</td>
+      </tr>
+    `).join('');
+
+    if (bestRecord) {
+      els.quickStatus.innerHTML = `${records.length}件 <span class="muted">/ 最高差枚: ${bestRecord.date} ${bestRecord.unitNo} ${bestRecord.difference >= 0 ? '+' : ''}${fmtNum(bestRecord.difference)}</span>`;
+    }
+    if (bestDayGroup) {
+      const cache = { bestDay: bestDayGroup };
+      localStorage.setItem(LS_KEYS.analysis_cache, JSON.stringify(cache));
+    }
+  }
+
+  function renderSettings() {
+    const settings = getSettings();
+    els.eventDates.value = (settings.eventDates || []).join('\n');
+  }
+
+  function renderAll() {
+    renderQuickStatus();
+    renderList();
+    renderAnalysis();
+    renderSettings();
+  }
+
+  function clearForm() {
+    els.date.value = todayStr();
+    els.unitNo.value = UNITS[0].no;
+    els.bonus.value = 0;
+    els.big.value = 0;
+    els.reg.value = 0;
+    els.totalGames.value = 0;
+    els.difference.value = 0;
+    els.memo.value = '';
+  }
+
+  function addRecord(e) {
+    e.preventDefault();
+    const records = getRecords();
+    const record = {
+      id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      date: els.date.value,
+      storeId: STORE.id,
+      machineId: MACHINE.id,
+      unitId: `${STORE.id}-${MACHINE.id}-${els.unitNo.value}`,
+      unitNo: els.unitNo.value,
+      bonus: Number(els.bonus.value || 0),
+      big: Number(els.big.value || 0),
+      reg: Number(els.reg.value || 0),
+      totalGames: Number(els.totalGames.value || 0),
+      difference: Number(els.difference.value || 0),
+      memo: els.memo.value.trim()
+    };
+
+    if (!record.date) {
+      alert('日付を入れてください。');
+      return;
+    }
+
+    records.push(record);
+    setRecords(records);
+    clearForm();
+    renderAll();
+    alert('保存しました。');
+    switchTab('list');
+  }
+
+  function exportCSV() {
+    const records = getRecords();
+    const header = ['date','storeId','machineId','unitId','unitNo','bonus','big','reg','totalGames','difference','memo'];
+    const rows = [header, ...records.map(r => header.map(k => r[k] ?? ''))];
+    const csv = '\uFEFF' + toCSV(rows);
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `vvv2_records_${todayStr()}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  function importCSVFile(file) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const text = String(reader.result || '').replace(/^\uFEFF/, '');
+      const rows = parseCSV(text);
+      if (rows.length < 2) {
+        alert('CSVの中身が少ないです。');
+        return;
+      }
+      const header = rows[0];
+      const idx = (name) => header.indexOf(name);
+
+      const imported = rows.slice(1).filter(r => r.length).map(r => ({
+        id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        date: r[idx('date')] || '',
+        storeId: r[idx('storeId')] || STORE.id,
+        machineId: r[idx('machineId')] || MACHINE.id,
+        unitId: r[idx('unitId')] || '',
+        unitNo: r[idx('unitNo')] || '',
+        bonus: Number(r[idx('bonus')] || 0),
+        big: Number(r[idx('big')] || 0),
+        reg: Number(r[idx('reg')] || 0),
+        totalGames: Number(r[idx('totalGames')] || 0),
+        difference: Number(r[idx('difference')] || 0),
+        memo: r[idx('memo')] || ''
+      })).filter(r => r.date && r.unitNo);
+
+      if (!imported.length) {
+        alert('読み込めるデータがありませんでした。');
+        return;
+      }
+
+      const merged = [...getRecords(), ...imported];
+      setRecords(merged);
+      renderAll();
+      alert(`${imported.length}件を読み込みました。`);
+    };
+    reader.readAsText(file, 'utf-8');
+  }
+<meta name="viewport" content="width=device-width, initial-scale=1">
+  function resetAll() {
+    if (!confirm('全データを消します。よろしいですか？')) return;
+    localStorage.setItem(LS_KEYS.records, JSON.stringify([]));
+    localStorage.setItem(LS_KEYS.app_settings, JSON.stringify({ eventDates: [] }));
+    renderAll();
+    alert('消しました。');
+  }
+
+  function saveSettings() {
+    const settings = { eventDates: normalizeEventDates(els.eventDates.value) };
+    setSettings(settings);
+    renderAnalysis();
+    alert('設定を保存しました。');
+  }
+
+  function bindEvents() {
+    els.tabs.forEach(btn => {
+      btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+    });
+
+    els.form.addEventListener('submit', addRecord);
+    els.clearFormBtn.addEventListener('click', clearForm);
+
+    [els.filterFrom, els.filterTo, els.filterUnit, els.filterKeyword, els.filterLimit].forEach(el => {
+      el.addEventListener('input', () => renderList());
+      el.addEventListener('change', () => renderList());
+    });
+    els.reloadListBtn.addEventListener('click', renderList);
+
+    document.querySelectorAll('th[data-sort]').forEach(th => {
+      th.addEventListener('click', () => {
+        const field = th.dataset.sort;
+        if (state.sortField === field) {
+          state.sortDir = state.sortDir === 'asc' ? 'desc' : 'asc';
+        } else {
+          state.sortField = field;
+          state.sortDir = field === 'date' ? 'desc' : 'asc';
+        }
+        renderList();
+      });
+    });
+
+    els.exportCsvBtn.addEventListener('click', exportCSV);
+    els.resetBtn.addEventListener('click', resetAll);
+    els.saveSettingsBtn.addEventListener('click', saveSettings);
+    els.importFile.addEventListener('change', (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (file) importCSVFile(file);
+      e.target.value = '';
+    });
+  }
+
+  function init() {
+    ensureSeedData();
+    els.storeName.value = STORE.name;
+    els.date.value = todayStr();
+    renderUnitOptions();
+    clearForm();
+    bindEvents();
+    renderAll();
+  }
+
+  init();
+})();
+</script>
+</body>
+</html>
