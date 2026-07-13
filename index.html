@@ -1,644 +1,535 @@
-はい。
-この内容を、まるごと index.html に入れてください。
-いったん全部消して、これをそのまま貼れば使えます。
-
-コピー
-html
 <!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>新橋UNO / Lパチスロ 革命機ヴァルヴレイヴ2 分析ツール</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>台データ管理</title>
   <style>
-    :root{
-      --bg:#0f172a;
-      --panel:#111827;
-      --panel2:#1f2937;
-      --line:#334155;
-      --text:#e5e7eb;
-      --muted:#94a3b8;
-      --accent:#38bdf8;
-      --accent2:#22c55e;
-      --danger:#fb7185;
-      --warning:#fbbf24;
-      --card:#0b1220;
-      --radius:16px;
-      --shadow:0 10px 30px rgba(0,0,0,.25);
+    :root {
+      --bg: #f5f7fb;
+      --card: #ffffff;
+      --line: #dfe5ee;
+      --line2: #edf1f6;
+      --text: #1f2937;
+      --sub: #667085;
+      --primary: #2563eb;
+      --primary2: #1d4ed8;
+      --danger: #dc2626;
+      --shadow: 0 6px 20px rgba(15, 23, 42, 0.06);
+      --radius: 16px;
+      --radius2: 12px;
     }
 
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-      background:linear-gradient(180deg,#020617 0%, #0f172a 100%);
-      color:var(--text);
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
+      overflow-x: hidden;
     }
 
-    .wrap{
-      max-width:1280px;
-      margin:0 auto;
-      padding:16px;
+    body {
+      padding: 16px;
     }
 
-    .header{
-      background:rgba(17,24,39,.95);
-      border:1px solid var(--line);
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
-      padding:18px;
-      margin-bottom:16px;
+    .page {
+      max-width: 1440px;
+      margin: 0 auto;
     }
 
-    .title{
-      margin:0 0 8px;
-      font-size:22px;
-      line-height:1.3;
+    .hero {
+      background: linear-gradient(135deg, #0f172a, #1d4ed8);
+      color: #fff;
+      border-radius: var(--radius);
+      padding: 20px 18px;
+      box-shadow: var(--shadow);
+      margin-bottom: 16px;
     }
 
-    .sub{
-      margin:0;
-      color:var(--muted);
-      font-size:14px;
+    .hero h1 {
+      margin: 0;
+      font-size: clamp(24px, 5vw, 38px);
+      line-height: 1.2;
+      letter-spacing: 0.02em;
     }
 
-    .grid{
-      display:grid;
-      gap:16px;
+    .hero p {
+      margin: 10px 0 0;
+      font-size: clamp(13px, 2.6vw, 15px);
+      line-height: 1.7;
+      opacity: 0.92;
     }
 
-    .panel{
-      background:rgba(17,24,39,.95);
-      border:1px solid var(--line);
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
-      padding:16px;
+    .badge-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 14px;
     }
 
-    .section-title{
-      margin:0 0 12px;
-      font-size:16px;
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.18);
+      font-size: 12px;
+      white-space: nowrap;
     }
 
-    .filters{
-      display:grid;
-      grid-template-columns:repeat(4, minmax(0,1fr));
-      gap:12px;
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 16px;
+      margin-bottom: 16px;
     }
 
-    .field label{
-      display:block;
-      margin-bottom:6px;
-      font-size:13px;
-      color:var(--muted);
+    .section-title {
+      font-size: 16px;
+      font-weight: 800;
+      margin: 0 0 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
-    .field input,
-    .field select,
-    .field textarea{
-      width:100%;
-      background:#0b1220;
-      color:var(--text);
-      border:1px solid var(--line);
-      border-radius:12px;
-      padding:10px 12px;
-      font-size:14px;
-      outline:none;
+    .section-sub {
+      margin: -2px 0 14px;
+      color: var(--sub);
+      font-size: 13px;
+      line-height: 1.7;
     }
 
-    .field textarea{
-      min-height:120px;
-      resize:vertical;
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
     }
 
-    .buttons{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      align-items:flex-end;
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-width: 0;
     }
 
-    .btn{
-      border:none;
-      border-radius:12px;
-      padding:10px 14px;
-      cursor:pointer;
-      font-size:14px;
-      font-weight:700;
-      color:#fff;
-      background:var(--accent);
-    }
-    .btn.secondary{ background:#475569; }
-    .btn.green{ background:var(--accent2); }
-    .btn:active{ transform:translateY(1px); }
-
-    .tabs{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-      margin-bottom:12px;
+    label {
+      font-size: 13px;
+      font-weight: 700;
+      color: #334155;
     }
 
-    .tab{
-      border:1px solid var(--line);
-      background:#0b1220;
-      color:var(--text);
-      border-radius:999px;
-      padding:10px 14px;
-      cursor:pointer;
-      font-size:14px;
-    }
-    .tab.active{
-      background:var(--accent);
-      border-color:var(--accent);
-      color:#00111f;
-      font-weight:700;
+    .hint {
+      font-size: 12px;
+      color: var(--sub);
+      line-height: 1.4;
     }
 
-    .kpis{
-      display:grid;
-      grid-template-columns:repeat(4, minmax(0,1fr));
-      gap:12px;
+    input, button {
+      font: inherit;
     }
 
-    .kpi{
-      background:linear-gradient(180deg, rgba(31,41,55,.9), rgba(15,23,42,.95));
-      border:1px solid var(--line);
-      border-radius:14px;
-      padding:14px;
-    }
-    .kpi .name{
-      color:var(--muted);
-      font-size:13px;
-      margin-bottom:6px;
-    }
-    .kpi .value{
-      font-size:26px;
-      font-weight:800;
-      line-height:1.1;
-    }
-    .kpi .small{
-      color:var(--muted);
-      font-size:12px;
-      margin-top:6px;
+    input {
+      width: 100%;
+      min-width: 0;
+      height: 46px;
+      padding: 0 12px;
+      border: 1px solid #cfd7e3;
+      border-radius: 12px;
+      background: #fff;
+      color: var(--text);
+      outline: none;
+      transition: border-color .15s ease, box-shadow .15s ease, transform .05s ease;
     }
 
-    .table-wrap{
-      overflow-x:auto;
-      width:100%;
-      border:1px solid var(--line);
-      border-radius:14px;
-      background:#0b1220;
+    input::placeholder {
+      color: #9aa4b2;
     }
 
-    table{
-      width:100%;
-      border-collapse:collapse;
-      min-width:920px;
+    input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
     }
 
-    thead th{
-      position:sticky;
-      top:0;
-      background:#111827;
-      z-index:1;
+    .btn-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 14px;
     }
 
-    th, td{
-      border-bottom:1px solid rgba(51,65,85,.7);
-      padding:10px 12px;
-      text-align:left;
-      white-space:nowrap;
-      font-size:14px;
+    button {
+      border: none;
+      border-radius: 12px;
+      padding: 12px 16px;
+      cursor: pointer;
+      color: #fff;
+      background: var(--primary);
+      font-weight: 700;
+      transition: transform .05s ease, background .15s ease, opacity .15s ease;
     }
 
-    th{
-      color:#cbd5e1;
-      font-weight:700;
+    button:hover { background: var(--primary2); }
+    button:active { transform: translateY(1px); }
+
+    button.secondary { background: #475569; }
+    button.secondary:hover { background: #334155; }
+
+    button.danger { background: var(--danger); }
+    button.danger:hover { opacity: 0.92; }
+
+    .btn-wide {
+      min-width: 140px;
     }
 
-    tr:hover td{
-      background:rgba(56,189,248,.06);
+    .small-note {
+      margin-top: 10px;
+      font-size: 12px;
+      color: var(--sub);
+      line-height: 1.7;
     }
 
-    .badge{
-      display:inline-block;
-      padding:4px 8px;
-      border-radius:999px;
-      font-size:12px;
-      font-weight:700;
-    }
-    .b-normal{ background:rgba(148,163,184,.15); color:#cbd5e1; }
-    .b-event{ background:rgba(34,197,94,.15); color:#86efac; }
-
-    .two-col{
-      display:grid;
-      grid-template-columns:1.2fr .8fr;
-      gap:16px;
+    .table-wrap {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: #fff;
     }
 
-    .hidden{ display:none !important; }
-
-    .note-row{
-      display:grid;
-      gap:12px;
+    table {
+      width: 100%;
+      min-width: 1500px;
+      border-collapse: collapse;
+      background: #fff;
     }
 
-    .muted{
-      color:var(--muted);
-      font-size:13px;
+    thead th {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      background: #f8fafc;
+      color: #334155;
+      font-size: 13px;
+      text-align: left;
+      padding: 12px 10px;
+      border-bottom: 1px solid var(--line);
+      white-space: nowrap;
     }
 
-    .footer{
-      margin-top:12px;
-      color:var(--muted);
-      font-size:12px;
-      text-align:center;
+    tbody td {
+      padding: 12px 10px;
+      border-bottom: 1px solid var(--line2);
+      font-size: 13px;
+      white-space: nowrap;
+      vertical-align: middle;
     }
 
-    @media (max-width: 980px){
-      .filters,
-      .kpis,
-      .two-col{
-        grid-template-columns:1fr;
+    tbody tr:hover td {
+      background: #fbfdff;
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .mini-btn {
+      padding: 8px 10px;
+      border-radius: 10px;
+      font-size: 12px;
+      line-height: 1;
+    }
+
+    .charts {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 16px;
+    }
+
+    .chart-box {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 16px;
+    }
+
+    .chart-title {
+      font-size: 16px;
+      font-weight: 800;
+      margin: 0 0 10px;
+    }
+
+    canvas {
+      width: 100%;
+      height: 280px;
+      display: block;
+      background: linear-gradient(#fff, #fbfcfe);
+      border: 1px solid var(--line2);
+      border-radius: 12px;
+    }
+
+    .footer-space {
+      height: 6px;
+    }
+
+    /* スマホ表示の微調整 */
+    @media (max-width: 768px) {
+      body { padding: 12px; }
+
+      .hero {
+        padding: 16px 14px;
+        border-radius: 14px;
+      }
+
+      .panel, .chart-box {
+        padding: 14px;
+        border-radius: 14px;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .btn-row {
+        flex-direction: column;
+      }
+
+      .btn-wide {
+        width: 100%;
+      }
+
+      button {
+        width: 100%;
+      }
+
+      .charts {
+        grid-template-columns: 1fr;
+      }
+
+      .table-wrap {
+        border-radius: 12px;
+      }
+
+      table {
+        min-width: 1320px;
+      }
+
+      thead th, tbody td {
+        padding: 10px 8px;
+        font-size: 12px;
+      }
+
+      canvas {
+        height: 240px;
       }
     }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <header class="header">
-      <h1 class="title">新橋UNO / Lパチスロ 革命機ヴァルヴレイヴ2 分析ツール</h1>
-      <p class="sub">まずは「表示」「絞り込み」「集計」が動く形にした版です。</p>
-    </header>
+  <div class="page">
+    <div class="hero">
+      <h1>台データ管理</h1>
+      <p>
+        機種名や台番号、各種データを入力して「追加」を押すと、下の表に反映されます。<br />
+        スマホでも見やすいように、入力欄は自動で1列表示に切り替わります。
+      </p>
+      <div class="badge-row">
+        <div class="badge">✅ 初心者向けのわかりやすい配置</div>
+        <div class="badge">✅ スマホ対応</div>
+        <div class="badge">✅ 自動保存あり</div>
+      </div>
+    </div>
 
-    <section class="panel">
-      <h2 class="section-title">絞り込み</h2>
-      <div class="filters">
+    <div class="panel">
+      <div class="section-title">1. 基本情報</div>
+      <div class="section-sub">まずは台の名前と番号を入れてください。</div>
+
+      <div class="grid">
         <div class="field">
-          <label for="fromDate">開始日</label>
-          <input type="date" id="fromDate">
+          <label for="machineName">機種名</label>
+          <input id="machineName" type="text" placeholder="例：北斗の拳" />
+          <div class="hint">台の機種名を入力します。</div>
         </div>
+
         <div class="field">
-          <label for="toDate">終了日</label>
-          <input type="date" id="toDate">
+          <label for="machineNo">台番号</label>
+          <input id="machineNo" type="text" placeholder="例：123" />
+          <div class="hint">店内での台番号です。</div>
         </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="section-title">2. ボーナス・当選回数</div>
+      <div class="section-sub">数字を入れる欄です。わからない項目は空欄でも大丈夫です。</div>
+
+      <div class="grid">
         <div class="field">
-          <label for="eventSelect">イベント</label>
-          <select id="eventSelect">
-            <option value="">全部</option>
-            <option value="通常">通常</option>
-            <option value="イベントA">イベントA</option>
-            <option value="イベントB">イベントB</option>
-          </select>
+          <label for="bonus">BONUS</label>
+          <input id="bonus" type="number" placeholder="0" inputmode="numeric" />
+          <div class="hint">ボーナス総数。</div>
         </div>
+
         <div class="field">
-          <label for="machineSearch">台番号</label>
-          <input type="text" id="machineSearch" placeholder="0500 など">
+          <label for="big">BIG</label>
+          <input id="big" type="number" placeholder="0" inputmode="numeric" />
+          <div class="hint">BIG当選回数。</div>
+        </div>
+
+        <div class="field">
+          <label for="reg">REG</label>
+          <input id="reg" type="number" placeholder="0" inputmode="numeric" />
+          <div class="hint">REG当選回数。</div>
+        </div>
+
+        <div class="field">
+          <label for="atart">AT/ART</label>
+          <input id="atart" type="number" placeholder="0" inputmode="numeric" />
+          <div class="hint">AT/ART当選回数。</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="section-title">3. 確率</div>
+      <div class="section-sub">例：<strong>1/299.3</strong> のように入力できます。</div>
+
+      <div class="grid">
+        <div class="field">
+          <label for="bigProb">BIG確率</label>
+          <input id="bigProb" type="text" placeholder="例：1/299.3" />
+        </div>
+
+        <div class="field">
+          <label for="regProb">REG確率</label>
+          <input id="regProb" type="text" placeholder="例：1/399.2" />
+        </div>
+
+        <div class="field">
+          <label for="atartProb">AT/ART確率</label>
+          <input id="atartProb" type="text" placeholder="例：1/512.8" />
+        </div>
+
+        <div class="field">
+          <label for="totalProb">合成確率</label>
+          <input id="totalProb" type="text" placeholder="例：1/199.8" />
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="section-title">4. ゲーム数・出玉</div>
+      <div class="section-sub">台の動きや出玉の管理に使う欄です。</div>
+
+      <div class="grid">
+        <div class="field">
+          <label for="totalGames">累計ゲーム</label>
+          <input id="totalGames" type="number" placeholder="0" inputmode="numeric" />
+        </div>
+
+        <div class="field">
+          <label for="lastGames">最終ゲーム</label>
+          <input id="lastGames" type="number" placeholder="0" inputmode="numeric" />
+        </div>
+
+        <div class="field">
+          <label for="payout">出枚数</label>
+          <input id="payout" type="number" placeholder="0" inputmode="numeric" />
+        </div>
+
+        <div class="field">
+          <label for="maxPayout">最大放出数</label>
+          <input id="maxPayout" type="number" placeholder="0" inputmode="numeric" />
+        </div>
+
+        <div class="field">
+          <label for="bestBig">BIG過去最高</label>
+          <input id="bestBig" type="number" placeholder="0" inputmode="numeric" />
         </div>
       </div>
 
-      <div style="margin-top:12px" class="buttons">
-        <button class="btn" id="applyBtn">この条件で見る</button>
-        <button class="btn secondary" id="resetBtn">条件を消す</button>
-      </div>
-    </section>
-
-    <section class="panel" style="margin-top:16px;">
-      <div class="tabs">
-        <button class="tab active" data-tab="tab-kpi">全体</button>
-        <button class="tab" data-tab="tab-machine">台番号別</button>
-        <button class="tab" data-tab="tab-event">イベント別</button>
-        <button class="tab" data-tab="tab-memo">メモ</button>
+      <div class="btn-row">
+        <button id="addBtn" class="btn-wide">追加する</button>
+        <button id="clearBtn" class="secondary btn-wide">入力を消す</button>
       </div>
 
-      <div id="tab-kpi" class="tab-panel">
-        <div class="kpis">
-          <div class="kpi">
-            <div class="name">表示中の件数</div>
-            <div class="value" id="kpiCount">0</div>
-            <div class="small">今見えているデータの数</div>
-          </div>
-          <div class="kpi">
-            <div class="name">差枚の合計</div>
-            <div class="value" id="kpiTotal">0</div>
-            <div class="small">プラスなら強い傾向</div>
-          </div>
-          <div class="kpi">
-            <div class="name">1台あたりの平均差枚</div>
-            <div class="value" id="kpiAvg">0</div>
-            <div class="small">だいたいの強さを見る</div>
-          </div>
-          <div class="kpi">
-            <div class="name">プラス台の数</div>
-            <div class="value" id="kpiPlus">0</div>
-            <div class="small">差枚がプラスの台</div>
-          </div>
-        </div>
+      <div class="small-note">
+        ・「追加する」で下の表に反映されます。<br />
+        ・この画面は自動保存に対応しているので、更新してもデータが残ります。<br />
+        ・表が横に長い場合は、表の中だけを左右にスクロールしてください。
+      </div>
+    </div>
 
-        <div class="two-col" style="margin-top:16px;">
-          <div class="panel" style="padding:0;">
-            <div style="padding:16px 16px 0;">
-              <h3 class="section-title">台番号の一覧</h3>
-            </div>
-            <div class="table-wrap">
-              <table>
-                <thead>
-                  <tr>
-                    <th>日付</th>
-                    <th>イベント</th>
-                    <th>台番号</th>
-                    <th>差枚</th>
-                    <th>BB</th>
-                    <th>RB</th>
-                    <th>メモ</th>
-                  </tr>
-                </thead>
-                <tbody id="machineTableBody"></tbody>
-              </table>
-            </div>
-          </div>
+    <div class="panel">
+      <div class="section-title">入力された台データ</div>
+      <div class="section-sub">ここに追加された内容が一覧で表示されます。</div>
 
-          <div class="panel">
-            <h3 class="section-title">今日の見方</h3>
-            <p class="muted" style="line-height:1.8; margin-top:0;">
-              この画面では、上の条件で台をしぼれます。<br>
-              台番号の一覧は、横に長くても見られるようにしています。<br>
-              まずは、見たい日付とイベントを選んでください。
-            </p>
-          </div>
-        </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>機種名</th>
+              <th>台番号</th>
+              <th>BONUS</th>
+              <th>BIG</th>
+              <th>REG</th>
+              <th>AT/ART</th>
+              <th>BIG確率</th>
+              <th>REG確率</th>
+              <th>AT/ART確率</th>
+              <th>合成確率</th>
+              <th>累計ゲーム</th>
+              <th>最終ゲーム</th>
+              <th>出枚数</th>
+              <th>最大放出数</th>
+              <th>BIG過去最高</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <tr>
+              <td colspan="16" style="text-align:center; color:#64748b; padding: 18px;">
+                まだデータがありません
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="charts">
+      <div class="chart-box">
+        <div class="chart-title">推移グラフ</div>
+        <canvas id="trendChart" width="900" height="280"></canvas>
       </div>
 
-      <div id="tab-machine" class="tab-panel hidden" style="margin-top:16px;">
-        <h3 class="section-title">台番号ごとの集計</h3>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>台番号</th>
-                <th>件数</th>
-                <th>合計差枚</th>
-                <th>平均差枚</th>
-                <th>プラス回数</th>
-              </tr>
-            </thead>
-            <tbody id="machineSummaryBody"></tbody>
-          </table>
-        </div>
+      <div class="chart-box">
+        <div class="chart-title">スランプグラフ</div>
+        <canvas id="slumpChart" width="900" height="280"></canvas>
       </div>
+    </div>
 
-      <div id="tab-event" class="tab-panel hidden" style="margin-top:16px;">
-        <h3 class="section-title">イベント別の集計</h3>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>イベント</th>
-                <th>件数</th>
-                <th>合計差枚</th>
-                <th>平均差枚</th>
-                <th>プラス回数</th>
-              </tr>
-            </thead>
-            <tbody id="eventSummaryBody"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <div id="tab-memo" class="tab-panel hidden" style="margin-top:16px;">
-        <h3 class="section-title">メモ</h3>
-        <div class="note-row">
-          <div class="field">
-            <label for="memoText">気づいたことを残す</label>
-            <textarea id="memoText" placeholder="例：イベントAの日は0503が強めだった"></textarea>
-          </div>
-          <div class="buttons">
-            <button class="btn green" id="saveMemoBtn">メモを保存</button>
-            <button class="btn secondary" id="clearMemoBtn">メモを消す</button>
-          </div>
-          <div class="muted" id="memoStatus">まだ保存していません。</div>
-        </div>
-      </div>
-    </section>
-
-    <div class="footer">新橋UNO / 革命機ヴァルヴレイヴ2 専用</div>
+    <div class="footer-space"></div>
   </div>
 
   <script>
-    const data = [
-      {date:'2026-07-01', event:'通常',    machine:'0500', diff:  400, bb:  6, rb: 2, memo:'様子見'},
-      {date:'2026-07-01', event:'通常',    machine:'0501', diff: -300, bb:  4, rb: 1, memo:'弱め'},
-      {date:'2026-07-01', event:'通常',    machine:'0502', diff:  800, bb:  7, rb: 3, memo:'少し良い'},
-      {date:'2026-07-01', event:'通常',    machine:'0503', diff: -1200,bb:  3, rb: 1, memo:'厳しい'},
-      {date:'2026-07-01', event:'通常',    machine:'0504', diff:  200, bb:  5, rb: 2, memo:'普通'},
-      {date:'2026-07-01', event:'通常',    machine:'0505', diff:  900, bb:  8, rb: 3, memo:'やや強い'},
-      {date:'2026-07-01', event:'通常',    machine:'0506', diff: -500, bb:  4, rb: 2, memo:'弱め'},
-      {date:'2026-07-01', event:'通常',    machine:'0507', diff: 1300, bb:  9, rb: 4, memo:'強い'},
-      {date:'2026-07-01', event:'通常',    machine:'0508', diff:  100, bb:  5, rb: 2, memo:'普通'},
-      {date:'2026-07-01', event:'通常',    machine:'0509', diff: -700, bb:  3, rb: 1, memo:'弱い'},
+    const STORAGE_KEY = "slot_table_data_v2";
 
-      {date:'2026-07-03', event:'イベントA', machine:'0500', diff: 1600, bb: 10, rb: 4, memo:'強め'},
-      {date:'2026-07-03', event:'イベントA', machine:'0501', diff:  300, bb:  6, rb: 2, memo:'普通'},
-      {date:'2026-07-03', event:'イベントA', machine:'0502', diff: -200, bb:  4, rb: 1, memo:'弱め'},
-      {date:'2026-07-03', event:'イベントA', machine:'0503', diff: 2200, bb: 11, rb: 4, memo:'かなり強い'},
-      {date:'2026-07-03', event:'イベントA', machine:'0504', diff:  900, bb:  8, rb: 3, memo:'良い'},
-      {date:'2026-07-03', event:'イベントA', machine:'0505', diff: -400, bb:  4, rb: 1, memo:'弱い'},
-      {date:'2026-07-03', event:'イベントA', machine:'0506', diff:  700, bb:  7, rb: 2, memo:'まずまず'},
-      {date:'2026-07-03', event:'イベントA', machine:'0507', diff: -100, bb:  5, rb: 1, memo:'普通'},
-      {date:'2026-07-03', event:'イベントA', machine:'0508', diff: 1200, bb:  9, rb: 4, memo:'強い'},
-      {date:'2026-07-03', event:'イベントA', machine:'0509', diff:  500, bb:  6, rb: 2, memo:'少し良い'},
-
-      {date:'2026-07-05', event:'イベントB', machine:'0500', diff: -600, bb:  4, rb: 1, memo:'弱い'},
-      {date:'2026-07-05', event:'イベントB', machine:'0501', diff:  700, bb:  7, rb: 2, memo:'良い'},
-      {date:'2026-07-05', event:'イベントB', machine:'0502', diff:  300, bb:  5, rb: 2, memo:'普通'},
-      {date:'2026-07-05', event:'イベントB', machine:'0503', diff:  400, bb:  6, rb: 2, memo:'普通'},
-      {date:'2026-07-05', event:'イベントB', machine:'0504', diff: 1500, bb: 10, rb: 4, memo:'強い'},
-      {date:'2026-07-05', event:'イベントB', machine:'0505', diff:  200, bb:  5, rb: 2, memo:'普通'},
-      {date:'2026-07-05', event:'イベントB', machine:'0506', diff:  900, bb:  8, rb: 3, memo:'良い'},
-      {date:'2026-07-05', event:'イベントB', machine:'0507', diff: -800, bb:  3, rb: 1, memo:'弱い'},
-      {date:'2026-07-05', event:'イベントB', machine:'0508', diff:  600, bb:  6, rb: 2, memo:'少し良い'},
-      {date:'2026-07-05', event:'イベントB', machine:'0509', diff: 1100, bb:  9, rb: 3, memo:'強め'}
-    ];
-
-    const els = {
-      fromDate: document.getElementById('fromDate'),
-      toDate: document.getElementById('toDate'),
-      eventSelect: document.getElementById('eventSelect'),
-      machineSearch: document.getElementById('machineSearch'),
-      applyBtn: document.getElementById('applyBtn'),
-      resetBtn: document.getElementById('resetBtn'),
-      machineTableBody: document.getElementById('machineTableBody'),
-      machineSummaryBody: document.getElementById('machineSummaryBody'),
-      eventSummaryBody: document.getElementById('eventSummaryBody'),
-      kpiCount: document.getElementById('kpiCount'),
-      kpiTotal: document.getElementById('kpiTotal'),
-      kpiAvg: document.getElementById('kpiAvg'),
-      kpiPlus: document.getElementById('kpiPlus'),
-      memoText: document.getElementById('memoText'),
-      saveMemoBtn: document.getElementById('saveMemoBtn'),
-      clearMemoBtn: document.getElementById('clearMemoBtn'),
-      memoStatus: document.getElementById('memoStatus')
-    };
-
-    const savedMemo = localStorage.getItem('vvv2_memo') || '';
-    els.memoText.value = savedMemo;
-    els.memoStatus.textContent = savedMemo ? 'メモを読み込みました。' : 'まだ保存していません。';
-
-    function fmt(n){
-      return n > 0 ? '+' + n.toLocaleString() : n.toLocaleString();
-    }
-
-    function getFilteredData(){
-      const from = els.fromDate.value;
-      const to = els.toDate.value;
-      const event = els.eventSelect.value;
-      const search = els.machineSearch.value.trim();
-
-      return data.filter(item => {
-        if (from && item.date < from) return false;
-        if (to && item.date > to) return false;
-        if (event && item.event !== event) return false;
-        if (search && !item.machine.includes(search)) return false;
-        return true;
-      });
-    }
-
-    function updateKpi(list){
-      const count = list.length;
-      const total = list.reduce((sum, x) => sum + x.diff, 0);
-      const avg = count ? Math.round(total / count) : 0;
-      const plus = list.filter(x => x.diff > 0).length;
-
-      els.kpiCount.textContent = count;
-      els.kpiTotal.textContent = fmt(total);
-      els.kpiAvg.textContent = fmt(avg);
-      els.kpiPlus.textContent = plus;
-    }
-
-    function updateMachineTable(list){
-      if (!list.length){
-        els.machineTableBody.innerHTML = '<tr><td colspan="7">条件に合うものがありません。</td></tr>';
-        return;
-      }
-
-      els.machineTableBody.innerHTML = list.map(item => `
-        <tr>
-          <td>${item.date}</td>
-          <td><span class="badge ${item.event === '通常' ? 'b-normal' : 'b-event'}">${item.event}</span></td>
-          <td>${item.machine}</td>
-          <td>${fmt(item.diff)}</td>
-          <td>${item.bb}</td>
-          <td>${item.rb}</td>
-          <td>${item.memo || ''}</td>
-        </tr>
-      `).join('');
-    }
-
-    function updateMachineSummary(list){
-      const map = {};
-      list.forEach(item => {
-        if (!map[item.machine]){
-          map[item.machine] = {machine:item.machine, count:0, total:0, plus:0};
-        }
-        map[item.machine].count += 1;
-        map[item.machine].total += item.diff;
-        if (item.diff > 0) map[item.machine].plus += 1;
-      });
-
-      const rows = Object.values(map).sort((a,b) => a.machine.localeCompare(b.machine));
-
-      if (!rows.length){
-        els.machineSummaryBody.innerHTML = '<tr><td colspan="5">条件に合うものがありません。</td></tr>';
-        return;
-      }
-
-      els.machineSummaryBody.innerHTML = rows.map(item => `
-        <tr>
-          <td>${item.machine}</td>
-          <td>${item.count}</td>
-          <td>${fmt(item.total)}</td>
-          <td>${fmt(Math.round(item.total / item.count))}</td>
-          <td>${item.plus}</td>
-        </tr>
-      `).join('');
-    }
-
-    function updateEventSummary(list){
-      const map = {};
-      list.forEach(item => {
-        if (!map[item.event]){
-          map[item.event] = {event:item.event, count:0, total:0, plus:0};
-        }
-        map[item.event].count += 1;
-        map[item.event].total += item.diff;
-        if (item.diff > 0) map[item.event].plus += 1;
-      });
-
-      const rows = Object.values(map);
-
-      if (!rows.length){
-        els.eventSummaryBody.innerHTML = '<tr><td colspan="5">条件に合うものがありません。</td></tr>';
-        return;
-      }
-
-      els.eventSummaryBody.innerHTML = rows.map(item => `
-        <tr>
-          <td>${item.event}</td>
-          <td>${item.count}</td>
-          <td>${fmt(item.total)}</td>
-          <td>${fmt(Math.round(item.total / item.count))}</td>
-          <td>${item.plus}</td>
-        </tr>
-      `).join('');
-    }
-
-    function renderAll(){
-      const list = getFilteredData();
-      updateKpi(list);
-      updateMachineTable(list);
-      updateMachineSummary(list);
-      updateEventSummary(list);
-    }
-
-    function clearFilters(){
-      els.fromDate.value = '';
-      els.toDate.value = '';
-      els.eventSelect.value = '';
-      els.machineSearch.value = '';
-      renderAll();
-    }
-
-    document.querySelectorAll('.tab').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
-        document.querySelectorAll('.tab-panel').forEach(x => x.classList.add('hidden'));
-        btn.classList.add('active');
-        document.getElementById(btn.dataset.tab).classList.remove('hidden');
-      });
-    });
-
-    els.applyBtn.addEventListener('click', renderAll);
-    els.resetBtn.addEventListener('click', clearFilters);
-
-    els.saveMemoBtn.addEventListener('click', () => {
-      localStorage.setItem('vvv2_memo', els.memoText.value);
-      els.memoStatus.textContent = 'メモを保存しました。';
-    });
-
-    els.clearMemoBtn.addEventListener('click', () => {
-      els.memoText.value = '';
-      localStorage.removeItem('vvv2_memo');
-      els.memoStatus.textContent = 'メモを消しました。';
-    });
-
-    // 入れるだけで反映する
-    [els.fromDate, els.toDate, els.eventSelect, els.machineSearch].forEach(el => {
-      el.addEventListener('input', renderAll);
-      el.addEventListener('change', renderAll);
-    });
-
-    renderAll();
-  </script>
-</body>
-</html>
+    const fields = {
+      machineName: document.getElementById("machineName"),
+      machineNo: document.getElementById("machineNo"),
+      bonus: document.getElementById("bonus"),
+      big: document.getElementById("big"),
+      reg: document.getElementById("reg"),
+      atart: document.get
