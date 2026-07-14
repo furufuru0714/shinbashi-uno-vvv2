@@ -523,13 +523,420 @@
     <div class="footer-space"></div>
   </div>
 
-  <script>
-    const STORAGE_KEY = "slot_table_data_v2";
+<script>
+  const STORAGE_KEY = "slot_table_data_v2";
 
-    const fields = {
-      machineName: document.getElementById("machineName"),
-      machineNo: document.getElementById("machineNo"),
-      bonus: document.getElementById("bonus"),
-      big: document.getElementById("big"),
-      reg: document.getElementById("reg"),
-      atart: document.get
+  const fields = {
+    machineName: document.getElementById("machineName"),
+    machineNo: document.getElementById("machineNo"),
+    bonus: document.getElementById("bonus"),
+    big: document.getElementById("big"),
+    reg: document.getElementById("reg"),
+    atart: document.getElementById("atart"),
+    bigProb: document.getElementById("bigProb"),
+    regProb: document.getElementById("regProb"),
+    atartProb: document.getElementById("atartProb"),
+    totalProb: document.getElementById("totalProb"),
+    totalGames: document.getElementById("totalGames"),
+    lastGames: document.getElementById("lastGames"),
+    payout: document.getElementById("payout"),
+    maxPayout: document.getElementById("maxPayout"),
+    bestBig: document.getElementById("bestBig"),
+  };
+
+  const tableBody = document.getElementById("tableBody");
+  const addBtn = document.getElementById("addBtn");
+  const clearBtn = document.getElementById("clearBtn");
+  const trendCanvas = document.getElementById("trendChart");
+  const slumpCanvas = document.getElementById("slumpChart");
+
+  let rows = [];
+  let editingIndex = -1;
+
+  function escapeHTML(value) {
+    return String(value ?? "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#39;");
+  }
+
+  function getNumberValue(el) {
+    const v = el.value.trim();
+    return v === "" ? "" : Number(v);
+  }
+
+  function readFormData() {
+    return {
+      machineName: fields.machineName.value.trim(),
+      machineNo: fields.machineNo.value.trim(),
+      bonus: getNumberValue(fields.bonus),
+      big: getNumberValue(fields.big),
+      reg: getNumberValue(fields.reg),
+      atart: getNumberValue(fields.atart),
+      bigProb: fields.bigProb.value.trim(),
+      regProb: fields.regProb.value.trim(),
+      atartProb: fields.atartProb.value.trim(),
+      totalProb: fields.totalProb.value.trim(),
+      totalGames: getNumberValue(fields.totalGames),
+      lastGames: getNumberValue(fields.lastGames),
+      payout: getNumberValue(fields.payout),
+      maxPayout: getNumberValue(fields.maxPayout),
+      bestBig: getNumberValue(fields.bestBig),
+      updatedAt: new Date().toISOString(),
+    };
+  }
+
+  function setFormData(row) {
+    fields.machineName.value = row.machineName ?? "";
+    fields.machineNo.value = row.machineNo ?? "";
+    fields.bonus.value = row.bonus ?? "";
+    fields.big.value = row.big ?? "";
+    fields.reg.value = row.reg ?? "";
+    fields.atart.value = row.atart ?? "";
+    fields.bigProb.value = row.bigProb ?? "";
+    fields.regProb.value = row.regProb ?? "";
+    fields.atartProb.value = row.atartProb ?? "";
+    fields.totalProb.value = row.totalProb ?? "";
+    fields.totalGames.value = row.totalGames ?? "";
+    fields.lastGames.value = row.lastGames ?? "";
+    fields.payout.value = row.payout ?? "";
+    fields.maxPayout.value = row.maxPayout ?? "";
+    fields.bestBig.value = row.bestBig ?? "";
+  }
+
+  function clearForm() {
+    Object.values(fields).forEach((el) => (el.value = ""));
+    editingIndex = -1;
+    addBtn.textContent = "追加する";
+  }
+
+  function saveToStorage() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(rows));
+  }
+
+  function loadFromStorage() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      rows = raw ? JSON.parse(raw) : [];
+      if (!Array.isArray(rows)) rows = [];
+    } catch (e) {
+      rows = [];
+    }
+  }
+
+  function formatValue(value) {
+    return value === "" || value === null || value === undefined ? "—" : String(value);
+  }
+
+  function renderTable() {
+    if (rows.length === 0) {
+      tableBody.innerHTML = `
+        <tr>
+          <td colspan="16" style="text-align:center; color:#64748b; padding: 18px;">
+            まだデータがありません
+          </td>
+        </tr>
+      `;
+      return;
+    }
+
+    tableBody.innerHTML = rows
+      .map((row, index) => `
+        <tr>
+          <td>${escapeHTML(formatValue(row.machineName))}</td>
+          <td>${escapeHTML(formatValue(row.machineNo))}</td>
+          <td>${escapeHTML(formatValue(row.bonus))}</td>
+          <td>${escapeHTML(formatValue(row.big))}</td>
+          <td>${escapeHTML(formatValue(row.reg))}</td>
+          <td>${escapeHTML(formatValue(row.atart))}</td>
+          <td>${escapeHTML(formatValue(row.bigProb))}</td>
+          <td>${escapeHTML(formatValue(row.regProb))}</td>
+          <td>${escapeHTML(formatValue(row.atartProb))}</td>
+          <td>${escapeHTML(formatValue(row.totalProb))}</td>
+          <td>${escapeHTML(formatValue(row.totalGames))}</td>
+          <td>${escapeHTML(formatValue(row.lastGames))}</td>
+          <td>${escapeHTML(formatValue(row.payout))}</td>
+          <td>${escapeHTML(formatValue(row.maxPayout))}</td>
+          <td>${escapeHTML(formatValue(row.bestBig))}</td>
+          <td>
+            <div class="actions">
+              <button class="mini-btn secondary edit-btn" data-index="${index}">編集</button>
+              <button class="mini-btn danger delete-btn" data-index="${index}">削除</button>
+            </div>
+          </td>
+        </tr>
+      `)
+      .join("");
+  }
+
+  function getCanvasContext(canvas) {
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return null;
+
+    const rect = canvas.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+
+    canvas.width = Math.max(300, Math.floor(rect.width * dpr));
+    canvas.height = Math.max(220, Math.floor(rect.height * dpr));
+
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return {
+      ctx,
+      width: rect.width,
+      height: rect.height,
+    };
+  }
+
+  function drawLineChart(canvas, config) {
+    const pack = getCanvasContext(canvas);
+    if (!pack) return;
+
+    const { ctx, width, height } = pack;
+    const { labels, datasets, title } = config;
+
+    ctx.clearRect(0, 0, width, height);
+
+    // 背景
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, width, height);
+
+    if (!labels.length || !datasets.some(ds => ds.data.some(v => Number.isFinite(v)))) {
+      ctx.fillStyle = "#94a3b8";
+      ctx.font = "14px sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("データを追加するとグラフが表示されます", width / 2, height / 2);
+      return;
+    }
+
+    const padding = {
+      top: 22,
+      right: 20,
+      bottom: 42,
+      left: 52,
+    };
+
+    const plotW = width - padding.left - padding.right;
+    const plotH = height - padding.top - padding.bottom;
+    const x0 = padding.left;
+    const y0 = padding.top;
+
+    const allValues = datasets.flatMap((ds) =>
+      ds.data.filter((v) => Number.isFinite(v))
+    );
+
+    let min = Math.min(...allValues);
+    let max = Math.max(...allValues);
+    if (min === max) {
+      if (min === 0) max = 1;
+      else {
+        min = min - Math.abs(min) * 0.2;
+        max = max + Math.abs(max) * 0.2;
+      }
+    }
+
+    // グリッド
+    ctx.strokeStyle = "#e5e7eb";
+    ctx.lineWidth = 1;
+    ctx.font = "12px sans-serif";
+    ctx.fillStyle = "#64748b";
+    ctx.textAlign = "right";
+    ctx.textBaseline = "middle";
+
+    const steps = 4;
+    for (let i = 0; i <= steps; i++) {
+      const y = y0 + (plotH / steps) * i;
+      ctx.beginPath();
+      ctx.moveTo(x0, y);
+      ctx.lineTo(x0 + plotW, y);
+      ctx.stroke();
+
+      const value = max - ((max - min) / steps) * i;
+      ctx.fillText(Math.round(value).toString(), x0 - 8, y);
+    }
+
+    // X軸
+    ctx.strokeStyle = "#cbd5e1";
+    ctx.beginPath();
+    ctx.moveTo(x0, y0 + plotH);
+    ctx.lineTo(x0 + plotW, y0 + plotH);
+    ctx.stroke();
+
+    const count = labels.length;
+    const xStep = count > 1 ? plotW / (count - 1) : 0;
+
+    datasets.forEach((ds, dsIndex) => {
+      const color = ds.color || ["#2563eb", "#10b981", "#f59e0b", "#ef4444"][dsIndex % 4];
+      const points = ds.data.map((raw, i) => {
+        const v = Number.isFinite(raw) ? raw : min;
+        const x = count > 1 ? x0 + xStep * i : x0 + plotW / 2;
+        const y = y0 + ((max - v) / (max - min)) * plotH;
+        return { x, y, v };
+      });
+
+      // 線
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      points.forEach((p, i) => {
+        if (i === 0) ctx.moveTo(p.x, p.y);
+        else ctx.lineTo(p.x, p.y);
+      });
+      ctx.stroke();
+
+      // 点
+      points.forEach((p) => {
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
+        ctx.fill();
+      });
+    });
+
+    // ラベル
+    ctx.textAlign = "center";
+    ctx.textBaseline = "top";
+    ctx.fillStyle = "#475569";
+    ctx.font = "11px sans-serif";
+
+    labels.forEach((label, i) => {
+      const x = count > 1 ? x0 + xStep * i : x0 + plotW / 2;
+      const y = y0 + plotH + 8;
+      const shortLabel = String(label).length > 10 ? String(label).slice(0, 10) + "…" : String(label);
+      ctx.fillText(shortLabel, x, y);
+    });
+
+    // 凡例
+    const legendY = 6;
+    let legendX = x0;
+    datasets.forEach((ds, i) => {
+      const color = ds.color || ["#2563eb", "#10b981", "#f59e0b", "#ef4444"][i % 4];
+
+      ctx.fillStyle = color;
+      ctx.fillRect(legendX, legendY + 3, 10, 10);
+
+      ctx.fillStyle = "#334155";
+      ctx.textAlign = "left";
+      ctx.textBaseline = "top";
+      ctx.font = "12px sans-serif";
+      ctx.fillText(ds.label, legendX + 14, legendY);
+
+      legendX += ctx.measureText(ds.label).width + 34;
+    });
+  }
+
+  function renderCharts() {
+    const labels = rows.map((row, idx) => {
+      const name = row.machineName || `台${idx + 1}`;
+      const no = row.machineNo ? ` #${row.machineNo}` : "";
+      return `${name}${no}`;
+    });
+
+    drawLineChart(trendCanvas, {
+      title: "推移グラフ",
+      labels,
+      datasets: [
+        {
+          label: "累計ゲーム",
+          data: rows.map((row) => Number(row.totalGames) || 0),
+          color: "#2563eb",
+        },
+        {
+          label: "最終ゲーム",
+          data: rows.map((row) => Number(row.lastGames) || 0),
+          color: "#10b981",
+        },
+      ],
+    });
+
+    drawLineChart(slumpCanvas, {
+      title: "スランプグラフ",
+      labels,
+      datasets: [
+        {
+          label: "出枚数",
+          data: rows.map((row) => Number(row.payout) || 0),
+          color: "#f59e0b",
+        },
+        {
+          label: "最大放出数",
+          data: rows.map((row) => Number(row.maxPayout) || 0),
+          color: "#ef4444",
+        },
+      ],
+    });
+  }
+
+  function refreshAll() {
+    renderTable();
+    saveToStorage();
+    renderCharts();
+  }
+
+  function addOrUpdateRow() {
+    const data = readFormData();
+
+    if (!data.machineName && !data.machineNo) {
+      alert("機種名または台番号を入力してください。");
+      return;
+    }
+
+    if (editingIndex >= 0) {
+      rows[editingIndex] = data;
+    } else {
+      rows.push(data);
+    }
+
+    clearForm();
+    refreshAll();
+  }
+
+  tableBody.addEventListener("click", (e) => {
+    const editBtn = e.target.closest(".edit-btn");
+    const deleteBtn = e.target.closest(".delete-btn");
+
+    if (editBtn) {
+      const index = Number(editBtn.dataset.index);
+      const row = rows[index];
+      if (!row) return;
+
+      editingIndex = index;
+      addBtn.textContent = "更新する";
+      setFormData(row);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+
+    if (deleteBtn) {
+      const index = Number(deleteBtn.dataset.index);
+      const row = rows[index];
+      if (!row) return;
+
+      const name = row.machineName || "この台";
+      if (!confirm(`${name} を削除しますか？`)) return;
+
+      rows.splice(index, 1);
+
+      if (editingIndex === index) {
+        clearForm();
+      } else if (editingIndex > index) {
+        editingIndex -= 1;
+      }
+
+      refreshAll();
+    }
+  });
+
+  addBtn.addEventListener("click", addOrUpdateRow);
+  clearBtn.addEventListener("click", clearForm);
+
+  window.addEventListener("resize", () => {
+    renderCharts();
+  });
+
+  // 初期化
+  loadFromStorage();
+  renderTable();
+  renderCharts();
+</script>
