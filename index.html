@@ -2,114 +2,81 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>台データ管理</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>パチスロデータ管理システム</title>
   <style>
     :root {
       --bg: #f5f7fb;
       --card: #ffffff;
-      --line: #dfe5ee;
-      --line2: #edf1f6;
-      --text: #1f2937;
-      --sub: #667085;
+      --text: #222;
+      --muted: #666;
       --primary: #2563eb;
-      --primary2: #1d4ed8;
+      --primary-dark: #1d4ed8;
       --danger: #dc2626;
-      --shadow: 0 6px 20px rgba(15, 23, 42, 0.06);
-      --radius: 16px;
-      --radius2: 12px;
+      --border: #dbe3f0;
+      --shadow: 0 8px 24px rgba(0,0,0,0.08);
+      --radius: 14px;
     }
 
-    * { box-sizing: border-box; }
-
-    html, body {
-      margin: 0;
-      padding: 0;
-      background: var(--bg);
-      color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
-      overflow-x: hidden;
+    * {
+      box-sizing: border-box;
     }
 
     body {
-      padding: 16px;
-    }
-
-    .page {
-      max-width: 1440px;
-      margin: 0 auto;
-    }
-
-    .hero {
-      background: linear-gradient(135deg, #0f172a, #1d4ed8);
-      color: #fff;
-      border-radius: var(--radius);
-      padding: 20px 18px;
-      box-shadow: var(--shadow);
-      margin-bottom: 16px;
-    }
-
-    .hero h1 {
       margin: 0;
-      font-size: clamp(24px, 5vw, 38px);
-      line-height: 1.2;
-      letter-spacing: 0.02em;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
+      background: var(--bg);
+      color: var(--text);
     }
 
-    .hero p {
-      margin: 10px 0 0;
-      font-size: clamp(13px, 2.6vw, 15px);
-      line-height: 1.7;
-      opacity: 0.92;
+    .container {
+      width: min(1200px, calc(100% - 24px));
+      margin: 0 auto;
+      padding: 16px 0 32px;
     }
 
-    .badge-row {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-top: 14px;
-    }
-
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 7px 10px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.12);
-      border: 1px solid rgba(255,255,255,0.18);
-      font-size: 12px;
-      white-space: nowrap;
-    }
-
-    .panel {
-      background: var(--card);
-      border: 1px solid var(--line);
+    .header {
+      background: linear-gradient(135deg, #1e3a8a, #2563eb);
+      color: #fff;
+      padding: 18px 16px;
       border-radius: var(--radius);
       box-shadow: var(--shadow);
-      padding: 16px;
       margin-bottom: 16px;
     }
 
-    .section-title {
-      font-size: 16px;
-      font-weight: 800;
-      margin: 0 0 10px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+    .header h1 {
+      margin: 0 0 6px;
+      font-size: 1.3rem;
     }
 
-    .section-sub {
-      margin: -2px 0 14px;
-      color: var(--sub);
-      font-size: 13px;
-      line-height: 1.7;
+    .header p {
+      margin: 0;
+      font-size: 0.95rem;
+      opacity: 0.95;
     }
 
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 16px;
+      border: 1px solid var(--border);
+    }
+
+    .section-title {
+      margin: 0 0 14px;
+      font-size: 1.05rem;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 12px;
     }
 
@@ -117,124 +84,127 @@
       display: flex;
       flex-direction: column;
       gap: 6px;
-      min-width: 0;
+    }
+
+    .field.full {
+      grid-column: 1 / -1;
     }
 
     label {
-      font-size: 13px;
-      font-weight: 700;
-      color: #334155;
-    }
-
-    .hint {
-      font-size: 12px;
-      color: var(--sub);
-      line-height: 1.4;
-    }
-
-    input, button {
-      font: inherit;
+      font-size: 0.9rem;
+      color: var(--muted);
     }
 
     input {
       width: 100%;
-      min-width: 0;
-      height: 46px;
-      padding: 0 12px;
-      border: 1px solid #cfd7e3;
-      border-radius: 12px;
+      padding: 12px 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 16px;
       background: #fff;
-      color: var(--text);
       outline: none;
-      transition: border-color .15s ease, box-shadow .15s ease, transform .05s ease;
-    }
-
-    input::placeholder {
-      color: #9aa4b2;
     }
 
     input:focus {
       border-color: var(--primary);
-      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
     }
 
-    .btn-row {
+    .button-row {
       display: flex;
-      gap: 10px;
       flex-wrap: wrap;
+      gap: 10px;
       margin-top: 14px;
     }
 
     button {
       border: none;
-      border-radius: 12px;
+      border-radius: 10px;
       padding: 12px 16px;
+      font-size: 15px;
       cursor: pointer;
-      color: #fff;
+      transition: 0.15s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+    }
+
+    .btn-primary {
       background: var(--primary);
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+    }
+
+    .btn-secondary {
+      background: #e5e7eb;
+      color: #111827;
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: #fff;
+    }
+
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .summary-item {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+    }
+
+    .summary-item .label {
+      color: var(--muted);
+      font-size: 0.85rem;
+      margin-bottom: 6px;
+    }
+
+    .summary-item .value {
+      font-size: 1.15rem;
       font-weight: 700;
-      transition: transform .05s ease, background .15s ease, opacity .15s ease;
-    }
-
-    button:hover { background: var(--primary2); }
-    button:active { transform: translateY(1px); }
-
-    button.secondary { background: #475569; }
-    button.secondary:hover { background: #334155; }
-
-    button.danger { background: var(--danger); }
-    button.danger:hover { opacity: 0.92; }
-
-    .btn-wide {
-      min-width: 140px;
-    }
-
-    .small-note {
-      margin-top: 10px;
-      font-size: 12px;
-      color: var(--sub);
-      line-height: 1.7;
     }
 
     .table-wrap {
-      width: 100%;
       overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-      border-radius: 14px;
-      border: 1px solid var(--line);
-      background: #fff;
+      border-radius: 12px;
+      border: 1px solid var(--border);
     }
 
     table {
       width: 100%;
-      min-width: 1500px;
       border-collapse: collapse;
+      min-width: 1100px;
       background: #fff;
     }
 
     thead th {
       position: sticky;
       top: 0;
-      z-index: 1;
       background: #f8fafc;
-      color: #334155;
-      font-size: 13px;
+      z-index: 1;
+    }
+
+    th, td {
+      border-bottom: 1px solid var(--border);
+      padding: 10px 8px;
       text-align: left;
-      padding: 12px 10px;
-      border-bottom: 1px solid var(--line);
-      white-space: nowrap;
-    }
-
-    tbody td {
-      padding: 12px 10px;
-      border-bottom: 1px solid var(--line2);
-      font-size: 13px;
-      white-space: nowrap;
+      font-size: 14px;
       vertical-align: middle;
+      white-space: nowrap;
     }
 
-    tbody tr:hover td {
-      background: #fbfdff;
+    tbody tr:hover {
+      background: #f9fbff;
     }
 
     .actions {
@@ -243,238 +213,148 @@
       flex-wrap: wrap;
     }
 
-    .mini-btn {
+    .small-btn {
       padding: 8px 10px;
-      border-radius: 10px;
-      font-size: 12px;
-      line-height: 1;
+      font-size: 13px;
+      border-radius: 8px;
     }
 
-    .charts {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 16px;
+    .empty {
+      padding: 24px;
+      text-align: center;
+      color: var(--muted);
     }
 
-    .chart-box {
-      background: #fff;
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 16px;
+    .footer-note {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 0.9rem;
     }
 
-    .chart-title {
-      font-size: 16px;
-      font-weight: 800;
-      margin: 0 0 10px;
-    }
-
-    canvas {
-      width: 100%;
-      height: 280px;
-      display: block;
-      background: linear-gradient(#fff, #fbfcfe);
-      border: 1px solid var(--line2);
-      border-radius: 12px;
-    }
-
-    .footer-space {
-      height: 6px;
-    }
-
-    /* スマホ表示の微調整 */
     @media (max-width: 768px) {
-      body { padding: 12px; }
-
-      .hero {
-        padding: 16px 14px;
-        border-radius: 14px;
-      }
-
-      .panel, .chart-box {
-        padding: 14px;
-        border-radius: 14px;
-      }
-
-      .grid {
+      .form-grid {
         grid-template-columns: 1fr;
       }
 
-      .btn-row {
-        flex-direction: column;
+      .summary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
       }
 
-      .btn-wide {
-        width: 100%;
+      .header h1 {
+        font-size: 1.15rem;
       }
+    }
 
-      button {
-        width: 100%;
-      }
-
-      .charts {
+    @media (max-width: 480px) {
+      .summary {
         grid-template-columns: 1fr;
       }
 
-      .table-wrap {
-        border-radius: 12px;
-      }
-
-      table {
-        min-width: 1320px;
-      }
-
-      thead th, tbody td {
-        padding: 10px 8px;
-        font-size: 12px;
-      }
-
-      canvas {
-        height: 240px;
+      input, button {
+        font-size: 16px;
       }
     }
   </style>
 </head>
 <body>
-  <div class="page">
-    <div class="hero">
-      <h1>台データ管理</h1>
-      <p>
-        機種名や台番号、各種データを入力して「追加」を押すと、下の表に反映されます。<br />
-        スマホでも見やすいように、入力欄は自動で1列表示に切り替わります。
-      </p>
-      <div class="badge-row">
-        <div class="badge">✅ 初心者向けのわかりやすい配置</div>
-        <div class="badge">✅ スマホ対応</div>
-        <div class="badge">✅ 自動保存あり</div>
-      </div>
-    </div>
+  <div class="container">
+    <header class="header">
+      <h1>パチスロデータ管理システム</h1>
+      <p>機種情報・ゲーム数・各種数値を入力して保存できます。</p>
+    </header>
 
-    <div class="panel">
-      <div class="section-title">1. 基本情報</div>
-      <div class="section-sub">まずは台の名前と番号を入れてください。</div>
+    <section class="card">
+      <h2 class="section-title">入力フォーム</h2>
 
-      <div class="grid">
-        <div class="field">
-          <label for="machineName">機種名</label>
-          <input id="machineName" type="text" placeholder="例：北斗の拳" />
-          <div class="hint">台の機種名を入力します。</div>
+      <form id="dataForm" autocomplete="off">
+        <div class="form-grid">
+          <div class="field">
+            <label for="machineName">機種名</label>
+            <input type="text" id="machineName" placeholder="例：L〇〇〇〇" />
+          </div>
+
+          <div class="field">
+            <label for="machineNo">台番号</label>
+            <input type="text" id="machineNo" placeholder="例：12" />
+          </div>
+
+          <div class="field">
+            <label for="bonus">BONUS</label>
+            <input type="number" id="bonus" min="0" step="1" placeholder="0" />
+          </div>
+
+          <div class="field">
+            <label for="big">BIG</label>
+            <input type="number" id="big" min="0" step="1" placeholder="0" />
+          </div>
+
+          <div class="field">
+            <label for="reg">REG</label>
+            <input type="number" id="reg" min="0" step="1" placeholder="0" />
+          </div>
+
+          <div class="field">
+            <label for="atart">AT/ART</label>
+            <input type="number" id="atart" min="0" step="1" placeholder="0" />
+          </div>
+
+          <div class="field">
+            <label for="totalGames">累計ゲーム数</label>
+            <input type="number" id="totalGames" min="0" step="1" placeholder="0" />
+          </div>
+
+          <div class="field">
+            <label for="lastGames">最終ゲーム数</label>
+            <input type="number" id="lastGames" min="0" step="1" placeholder="0" />
+          </div>
+
+          <div class="field">
+            <label for="payout">払出枚数</label>
+            <input type="number" id="payout" min="0" step="1" placeholder="0" />
+          </div>
+
+          <div class="field">
+            <label for="bigRecord">BIG記録</label>
+            <input type="number" id="bigRecord" min="0" step="1" placeholder="0" />
+          </div>
+
+          <div class="field full">
+            <label for="memo">メモ</label>
+            <input type="text" id="memo" placeholder="任意のメモを入力" />
+          </div>
         </div>
 
-        <div class="field">
-          <label for="machineNo">台番号</label>
-          <input id="machineNo" type="text" placeholder="例：123" />
-          <div class="hint">店内での台番号です。</div>
+        <div class="button-row">
+          <button type="button" id="addBtn" class="btn-primary">追加する</button>
+          <button type="button" id="clearBtn" class="btn-secondary">クリア</button>
         </div>
-      </div>
-    </div>
+      </form>
+    </section>
 
-    <div class="panel">
-      <div class="section-title">2. ボーナス・当選回数</div>
-      <div class="section-sub">数字を入れる欄です。わからない項目は空欄でも大丈夫です。</div>
-
-      <div class="grid">
-        <div class="field">
-          <label for="bonus">BONUS</label>
-          <input id="bonus" type="number" placeholder="0" inputmode="numeric" />
-          <div class="hint">ボーナス総数。</div>
+    <section class="card">
+      <h2 class="section-title">集計</h2>
+      <div class="summary">
+        <div class="summary-item">
+          <div class="label">登録件数</div>
+          <div class="value" id="countSummary">0</div>
         </div>
-
-        <div class="field">
-          <label for="big">BIG</label>
-          <input id="big" type="number" placeholder="0" inputmode="numeric" />
-          <div class="hint">BIG当選回数。</div>
+        <div class="summary-item">
+          <div class="label">総BONUS</div>
+          <div class="value" id="bonusSummary">0</div>
         </div>
-
-        <div class="field">
-          <label for="reg">REG</label>
-          <input id="reg" type="number" placeholder="0" inputmode="numeric" />
-          <div class="hint">REG当選回数。</div>
+        <div class="summary-item">
+          <div class="label">総BIG</div>
+          <div class="value" id="bigSummary">0</div>
         </div>
-
-        <div class="field">
-          <label for="atart">AT/ART</label>
-          <input id="atart" type="number" placeholder="0" inputmode="numeric" />
-          <div class="hint">AT/ART当選回数。</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="panel">
-      <div class="section-title">3. 確率</div>
-      <div class="section-sub">例：<strong>1/299.3</strong> のように入力できます。</div>
-
-      <div class="grid">
-        <div class="field">
-          <label for="bigProb">BIG確率</label>
-          <input id="bigProb" type="text" placeholder="例：1/299.3" />
-        </div>
-
-        <div class="field">
-          <label for="regProb">REG確率</label>
-          <input id="regProb" type="text" placeholder="例：1/399.2" />
-        </div>
-
-        <div class="field">
-          <label for="atartProb">AT/ART確率</label>
-          <input id="atartProb" type="text" placeholder="例：1/512.8" />
-        </div>
-
-        <div class="field">
-          <label for="totalProb">合成確率</label>
-          <input id="totalProb" type="text" placeholder="例：1/199.8" />
-        </div>
-      </div>
-    </div>
-
-    <div class="panel">
-      <div class="section-title">4. ゲーム数・出玉</div>
-      <div class="section-sub">台の動きや出玉の管理に使う欄です。</div>
-
-      <div class="grid">
-        <div class="field">
-          <label for="totalGames">累計ゲーム</label>
-          <input id="totalGames" type="number" placeholder="0" inputmode="numeric" />
-        </div>
-
-        <div class="field">
-          <label for="lastGames">最終ゲーム</label>
-          <input id="lastGames" type="number" placeholder="0" inputmode="numeric" />
-        </div>
-
-        <div class="field">
-          <label for="payout">出枚数</label>
-          <input id="payout" type="number" placeholder="0" inputmode="numeric" />
-        </div>
-
-        <div class="field">
-          <label for="maxPayout">最大放出数</label>
-          <input id="maxPayout" type="number" placeholder="0" inputmode="numeric" />
-        </div>
-
-        <div class="field">
-          <label for="bestBig">BIG過去最高</label>
-          <input id="bestBig" type="number" placeholder="0" inputmode="numeric" />
+        <div class="summary-item">
+          <div class="label">総REG</div>
+          <div class="value" id="regSummary">0</div>
         </div>
       </div>
+    </section>
 
-      <div class="btn-row">
-        <button id="addBtn" class="btn-wide">追加する</button>
-        <button id="clearBtn" class="secondary btn-wide">入力を消す</button>
-      </div>
-
-      <div class="small-note">
-        ・「追加する」で下の表に反映されます。<br />
-        ・この画面は自動保存に対応しているので、更新してもデータが残ります。<br />
-        ・表が横に長い場合は、表の中だけを左右にスクロールしてください。
-      </div>
-    </div>
-
-    <div class="panel">
-      <div class="section-title">入力された台データ</div>
-      <div class="section-sub">ここに追加された内容が一覧で表示されます。</div>
-
+    <section class="card">
+      <h2 class="section-title">一覧</h2>
       <div class="table-wrap">
         <table>
           <thead>
@@ -485,458 +365,218 @@
               <th>BIG</th>
               <th>REG</th>
               <th>AT/ART</th>
-              <th>BIG確率</th>
-              <th>REG確率</th>
-              <th>AT/ART確率</th>
-              <th>合成確率</th>
-              <th>累計ゲーム</th>
-              <th>最終ゲーム</th>
-              <th>出枚数</th>
-              <th>最大放出数</th>
-              <th>BIG過去最高</th>
+              <th>累計G</th>
+              <th>最終G</th>
+              <th>払出枚数</th>
+              <th>BIG記録</th>
+              <th>メモ</th>
               <th>操作</th>
             </tr>
           </thead>
           <tbody id="tableBody">
             <tr>
-              <td colspan="16" style="text-align:center; color:#64748b; padding: 18px;">
-                まだデータがありません
-              </td>
+              <td colspan="12" class="empty">まだデータがありません。</td>
             </tr>
           </tbody>
         </table>
       </div>
-    </div>
-
-    <div class="charts">
-      <div class="chart-box">
-        <div class="chart-title">推移グラフ</div>
-        <canvas id="trendChart" width="900" height="280"></canvas>
+      <div class="footer-note">
+        ※ データはこのブラウザの localStorage に保存されます。
       </div>
-
-      <div class="chart-box">
-        <div class="chart-title">スランプグラフ</div>
-        <canvas id="slumpChart" width="900" height="280"></canvas>
-      </div>
-    </div>
-
-    <div class="footer-space"></div>
+    </section>
   </div>
 
-<script>
-  const STORAGE_KEY = "slot_table_data_v2";
+  <script>
+    const STORAGE_KEY = "pachislot_records_v1";
 
-  const fields = {
-    machineName: document.getElementById("machineName"),
-    machineNo: document.getElementById("machineNo"),
-    bonus: document.getElementById("bonus"),
-    big: document.getElementById("big"),
-    reg: document.getElementById("reg"),
-    atart: document.getElementById("atart"),
-    bigProb: document.getElementById("bigProb"),
-    regProb: document.getElementById("regProb"),
-    atartProb: document.getElementById("atartProb"),
-    totalProb: document.getElementById("totalProb"),
-    totalGames: document.getElementById("totalGames"),
-    lastGames: document.getElementById("lastGames"),
-    payout: document.getElementById("payout"),
-    maxPayout: document.getElementById("maxPayout"),
-    bestBig: document.getElementById("bestBig"),
-  };
+    const dataForm = document.getElementById("dataForm");
+    const addBtn = document.getElementById("addBtn");
+    const clearBtn = document.getElementById("clearBtn");
+    const tableBody = document.getElementById("tableBody");
 
-  const tableBody = document.getElementById("tableBody");
-  const addBtn = document.getElementById("addBtn");
-  const clearBtn = document.getElementById("clearBtn");
-  const trendCanvas = document.getElementById("trendChart");
-  const slumpCanvas = document.getElementById("slumpChart");
+    const countSummary = document.getElementById("countSummary");
+    const bonusSummary = document.getElementById("bonusSummary");
+    const bigSummary = document.getElementById("bigSummary");
+    const regSummary = document.getElementById("regSummary");
 
-  let rows = [];
-  let editingIndex = -1;
-
-  function escapeHTML(value) {
-    return String(value ?? "")
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#39;");
-  }
-
-  function getNumberValue(el) {
-    const v = el.value.trim();
-    return v === "" ? "" : Number(v);
-  }
-
-  function readFormData() {
-    return {
-      machineName: fields.machineName.value.trim(),
-      machineNo: fields.machineNo.value.trim(),
-      bonus: getNumberValue(fields.bonus),
-      big: getNumberValue(fields.big),
-      reg: getNumberValue(fields.reg),
-      atart: getNumberValue(fields.atart),
-      bigProb: fields.bigProb.value.trim(),
-      regProb: fields.regProb.value.trim(),
-      atartProb: fields.atartProb.value.trim(),
-      totalProb: fields.totalProb.value.trim(),
-      totalGames: getNumberValue(fields.totalGames),
-      lastGames: getNumberValue(fields.lastGames),
-      payout: getNumberValue(fields.payout),
-      maxPayout: getNumberValue(fields.maxPayout),
-      bestBig: getNumberValue(fields.bestBig),
-      updatedAt: new Date().toISOString(),
+    const fields = {
+      machineName: document.getElementById("machineName"),
+      machineNo: document.getElementById("machineNo"),
+      bonus: document.getElementById("bonus"),
+      big: document.getElementById("big"),
+      reg: document.getElementById("reg"),
+      atart: document.getElementById("atart"),
+      totalGames: document.getElementById("totalGames"),
+      lastGames: document.getElementById("lastGames"),
+      payout: document.getElementById("payout"),
+      bigRecord: document.getElementById("bigRecord"),
+      memo: document.getElementById("memo"),
     };
-  }
 
-  function setFormData(row) {
-    fields.machineName.value = row.machineName ?? "";
-    fields.machineNo.value = row.machineNo ?? "";
-    fields.bonus.value = row.bonus ?? "";
-    fields.big.value = row.big ?? "";
-    fields.reg.value = row.reg ?? "";
-    fields.atart.value = row.atart ?? "";
-    fields.bigProb.value = row.bigProb ?? "";
-    fields.regProb.value = row.regProb ?? "";
-    fields.atartProb.value = row.atartProb ?? "";
-    fields.totalProb.value = row.totalProb ?? "";
-    fields.totalGames.value = row.totalGames ?? "";
-    fields.lastGames.value = row.lastGames ?? "";
-    fields.payout.value = row.payout ?? "";
-    fields.maxPayout.value = row.maxPayout ?? "";
-    fields.bestBig.value = row.bestBig ?? "";
-  }
+    let records = loadRecords();
+    let editIndex = -1;
 
-  function clearForm() {
-    Object.values(fields).forEach((el) => (el.value = ""));
-    editingIndex = -1;
-    addBtn.textContent = "追加する";
-  }
-
-  function saveToStorage() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(rows));
-  }
-
-  function loadFromStorage() {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      rows = raw ? JSON.parse(raw) : [];
-      if (!Array.isArray(rows)) rows = [];
-    } catch (e) {
-      rows = [];
-    }
-  }
-
-  function formatValue(value) {
-    return value === "" || value === null || value === undefined ? "—" : String(value);
-  }
-
-  function renderTable() {
-    if (rows.length === 0) {
-      tableBody.innerHTML = `
-        <tr>
-          <td colspan="16" style="text-align:center; color:#64748b; padding: 18px;">
-            まだデータがありません
-          </td>
-        </tr>
-      `;
-      return;
+    function loadRecords() {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (!saved) return [];
+      try {
+        const parsed = JSON.parse(saved);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (e) {
+        return [];
+      }
     }
 
-    tableBody.innerHTML = rows
-      .map((row, index) => `
+    function saveRecords() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+    }
+
+    function getFormData() {
+      return {
+        machineName: fields.machineName.value.trim(),
+        machineNo: fields.machineNo.value.trim(),
+        bonus: Number(fields.bonus.value || 0),
+        big: Number(fields.big.value || 0),
+        reg: Number(fields.reg.value || 0),
+        atart: Number(fields.atart.value || 0),
+        totalGames: Number(fields.totalGames.value || 0),
+        lastGames: Number(fields.lastGames.value || 0),
+        payout: Number(fields.payout.value || 0),
+        bigRecord: Number(fields.bigRecord.value || 0),
+        memo: fields.memo.value.trim(),
+        createdAt: new Date().toISOString()
+      };
+    }
+
+    function setFormData(record) {
+      fields.machineName.value = record.machineName || "";
+      fields.machineNo.value = record.machineNo || "";
+      fields.bonus.value = record.bonus ?? 0;
+      fields.big.value = record.big ?? 0;
+      fields.reg.value = record.reg ?? 0;
+      fields.atart.value = record.atart ?? 0;
+      fields.totalGames.value = record.totalGames ?? 0;
+      fields.lastGames.value = record.lastGames ?? 0;
+      fields.payout.value = record.payout ?? 0;
+      fields.bigRecord.value = record.bigRecord ?? 0;
+      fields.memo.value = record.memo || "";
+    }
+
+    function clearForm() {
+      dataForm.reset();
+      editIndex = -1;
+      addBtn.textContent = "追加する";
+      fields.machineName.focus();
+    }
+
+    function validateRecord(record) {
+      if (!record.machineName) {
+        alert("機種名を入力してください。");
+        return false;
+      }
+      if (!record.machineNo) {
+        alert("台番号を入力してください。");
+        return false;
+      }
+      return true;
+    }
+
+    function addOrUpdateRow() {
+      const record = getFormData();
+
+      if (!validateRecord(record)) return;
+
+      if (editIndex >= 0) {
+        records[editIndex] = record;
+      } else {
+        records.unshift(record);
+      }
+
+      saveRecords();
+      renderTable();
+      renderSummary();
+      clearForm();
+    }
+
+    function editRecord(index) {
+      editIndex = index;
+      setFormData(records[index]);
+      addBtn.textContent = "更新する";
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function deleteRecord(index) {
+      if (!confirm("このデータを削除しますか？")) return;
+      records.splice(index, 1);
+      saveRecords();
+      renderTable();
+      renderSummary();
+      if (editIndex === index) clearForm();
+    }
+
+    function renderSummary() {
+      countSummary.textContent = records.length;
+      bonusSummary.textContent = records.reduce((sum, r) => sum + Number(r.bonus || 0), 0);
+      bigSummary.textContent = records.reduce((sum, r) => sum + Number(r.big || 0), 0);
+      regSummary.textContent = records.reduce((sum, r) => sum + Number(r.reg || 0), 0);
+    }
+
+    function renderTable() {
+      if (!records.length) {
+        tableBody.innerHTML = `<tr><td colspan="12" class="empty">まだデータがありません。</td></tr>`;
+        return;
+      }
+
+      tableBody.innerHTML = records.map((record, index) => `
         <tr>
-          <td>${escapeHTML(formatValue(row.machineName))}</td>
-          <td>${escapeHTML(formatValue(row.machineNo))}</td>
-          <td>${escapeHTML(formatValue(row.bonus))}</td>
-          <td>${escapeHTML(formatValue(row.big))}</td>
-          <td>${escapeHTML(formatValue(row.reg))}</td>
-          <td>${escapeHTML(formatValue(row.atart))}</td>
-          <td>${escapeHTML(formatValue(row.bigProb))}</td>
-          <td>${escapeHTML(formatValue(row.regProb))}</td>
-          <td>${escapeHTML(formatValue(row.atartProb))}</td>
-          <td>${escapeHTML(formatValue(row.totalProb))}</td>
-          <td>${escapeHTML(formatValue(row.totalGames))}</td>
-          <td>${escapeHTML(formatValue(row.lastGames))}</td>
-          <td>${escapeHTML(formatValue(row.payout))}</td>
-          <td>${escapeHTML(formatValue(row.maxPayout))}</td>
-          <td>${escapeHTML(formatValue(row.bestBig))}</td>
+          <td>${escapeHtml(record.machineName)}</td>
+          <td>${escapeHtml(record.machineNo)}</td>
+          <td>${record.bonus}</td>
+          <td>${record.big}</td>
+          <td>${record.reg}</td>
+          <td>${record.atart}</td>
+          <td>${record.totalGames}</td>
+          <td>${record.lastGames}</td>
+          <td>${record.payout}</td>
+          <td>${record.bigRecord}</td>
+          <td>${escapeHtml(record.memo || "")}</td>
           <td>
             <div class="actions">
-              <button class="mini-btn secondary edit-btn" data-index="${index}">編集</button>
-              <button class="mini-btn danger delete-btn" data-index="${index}">削除</button>
+              <button type="button" class="small-btn btn-secondary" onclick="editRecord(${index})">編集</button>
+              <button type="button" class="small-btn btn-danger" onclick="deleteRecord(${index})">削除</button>
             </div>
           </td>
         </tr>
-      `)
-      .join("");
-  }
-
-  function getCanvasContext(canvas) {
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return null;
-
-    const rect = canvas.getBoundingClientRect();
-    const dpr = window.devicePixelRatio || 1;
-
-    canvas.width = Math.max(300, Math.floor(rect.width * dpr));
-    canvas.height = Math.max(220, Math.floor(rect.height * dpr));
-
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    return {
-      ctx,
-      width: rect.width,
-      height: rect.height,
-    };
-  }
-
-  function drawLineChart(canvas, config) {
-    const pack = getCanvasContext(canvas);
-    if (!pack) return;
-
-    const { ctx, width, height } = pack;
-    const { labels, datasets, title } = config;
-
-    ctx.clearRect(0, 0, width, height);
-
-    // 背景
-    ctx.fillStyle = "#ffffff";
-    ctx.fillRect(0, 0, width, height);
-
-    if (!labels.length || !datasets.some(ds => ds.data.some(v => Number.isFinite(v)))) {
-      ctx.fillStyle = "#94a3b8";
-      ctx.font = "14px sans-serif";
-      ctx.textAlign = "center";
-      ctx.fillText("データを追加するとグラフが表示されます", width / 2, height / 2);
-      return;
+      `).join("");
     }
 
-    const padding = {
-      top: 22,
-      right: 20,
-      bottom: 42,
-      left: 52,
-    };
-
-    const plotW = width - padding.left - padding.right;
-    const plotH = height - padding.top - padding.bottom;
-    const x0 = padding.left;
-    const y0 = padding.top;
-
-    const allValues = datasets.flatMap((ds) =>
-      ds.data.filter((v) => Number.isFinite(v))
-    );
-
-    let min = Math.min(...allValues);
-    let max = Math.max(...allValues);
-    if (min === max) {
-      if (min === 0) max = 1;
-      else {
-        min = min - Math.abs(min) * 0.2;
-        max = max + Math.abs(max) * 0.2;
-      }
+    function escapeHtml(text) {
+      return String(text)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
     }
 
-    // グリッド
-    ctx.strokeStyle = "#e5e7eb";
-    ctx.lineWidth = 1;
-    ctx.font = "12px sans-serif";
-    ctx.fillStyle = "#64748b";
-    ctx.textAlign = "right";
-    ctx.textBaseline = "middle";
-
-    const steps = 4;
-    for (let i = 0; i <= steps; i++) {
-      const y = y0 + (plotH / steps) * i;
-      ctx.beginPath();
-      ctx.moveTo(x0, y);
-      ctx.lineTo(x0 + plotW, y);
-      ctx.stroke();
-
-      const value = max - ((max - min) / steps) * i;
-      ctx.fillText(Math.round(value).toString(), x0 - 8, y);
-    }
-
-    // X軸
-    ctx.strokeStyle = "#cbd5e1";
-    ctx.beginPath();
-    ctx.moveTo(x0, y0 + plotH);
-    ctx.lineTo(x0 + plotW, y0 + plotH);
-    ctx.stroke();
-
-    const count = labels.length;
-    const xStep = count > 1 ? plotW / (count - 1) : 0;
-
-    datasets.forEach((ds, dsIndex) => {
-      const color = ds.color || ["#2563eb", "#10b981", "#f59e0b", "#ef4444"][dsIndex % 4];
-      const points = ds.data.map((raw, i) => {
-        const v = Number.isFinite(raw) ? raw : min;
-        const x = count > 1 ? x0 + xStep * i : x0 + plotW / 2;
-        const y = y0 + ((max - v) / (max - min)) * plotH;
-        return { x, y, v };
-      });
-
-      // 線
-      ctx.strokeStyle = color;
-      ctx.lineWidth = 2.5;
-      ctx.beginPath();
-      points.forEach((p, i) => {
-        if (i === 0) ctx.moveTo(p.x, p.y);
-        else ctx.lineTo(p.x, p.y);
-      });
-      ctx.stroke();
-
-      // 点
-      points.forEach((p) => {
-        ctx.fillStyle = color;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
-        ctx.fill();
-      });
+    addBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      addOrUpdateRow();
     });
 
-    // ラベル
-    ctx.textAlign = "center";
-    ctx.textBaseline = "top";
-    ctx.fillStyle = "#475569";
-    ctx.font = "11px sans-serif";
-
-    labels.forEach((label, i) => {
-      const x = count > 1 ? x0 + xStep * i : x0 + plotW / 2;
-      const y = y0 + plotH + 8;
-      const shortLabel = String(label).length > 10 ? String(label).slice(0, 10) + "…" : String(label);
-      ctx.fillText(shortLabel, x, y);
+    clearBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      clearForm();
     });
 
-    // 凡例
-    const legendY = 6;
-    let legendX = x0;
-    datasets.forEach((ds, i) => {
-      const color = ds.color || ["#2563eb", "#10b981", "#f59e0b", "#ef4444"][i % 4];
-
-      ctx.fillStyle = color;
-      ctx.fillRect(legendX, legendY + 3, 10, 10);
-
-      ctx.fillStyle = "#334155";
-      ctx.textAlign = "left";
-      ctx.textBaseline = "top";
-      ctx.font = "12px sans-serif";
-      ctx.fillText(ds.label, legendX + 14, legendY);
-
-      legendX += ctx.measureText(ds.label).width + 34;
-    });
-  }
-
-  function renderCharts() {
-    const labels = rows.map((row, idx) => {
-      const name = row.machineName || `台${idx + 1}`;
-      const no = row.machineNo ? ` #${row.machineNo}` : "";
-      return `${name}${no}`;
+    document.addEventListener("DOMContentLoaded", () => {
+      renderTable();
+      renderSummary();
     });
 
-    drawLineChart(trendCanvas, {
-      title: "推移グラフ",
-      labels,
-      datasets: [
-        {
-          label: "累計ゲーム",
-          data: rows.map((row) => Number(row.totalGames) || 0),
-          color: "#2563eb",
-        },
-        {
-          label: "最終ゲーム",
-          data: rows.map((row) => Number(row.lastGames) || 0),
-          color: "#10b981",
-        },
-      ],
-    });
-
-    drawLineChart(slumpCanvas, {
-      title: "スランプグラフ",
-      labels,
-      datasets: [
-        {
-          label: "出枚数",
-          data: rows.map((row) => Number(row.payout) || 0),
-          color: "#f59e0b",
-        },
-        {
-          label: "最大放出数",
-          data: rows.map((row) => Number(row.maxPayout) || 0),
-          color: "#ef4444",
-        },
-      ],
-    });
-  }
-
-  function refreshAll() {
-    renderTable();
-    saveToStorage();
-    renderCharts();
-  }
-
-  function addOrUpdateRow() {
-    const data = readFormData();
-
-    if (!data.machineName && !data.machineNo) {
-      alert("機種名または台番号を入力してください。");
-      return;
-    }
-
-    if (editingIndex >= 0) {
-      rows[editingIndex] = data;
-    } else {
-      rows.push(data);
-    }
-
-    clearForm();
-    refreshAll();
-  }
-
-  tableBody.addEventListener("click", (e) => {
-    const editBtn = e.target.closest(".edit-btn");
-    const deleteBtn = e.target.closest(".delete-btn");
-
-    if (editBtn) {
-      const index = Number(editBtn.dataset.index);
-      const row = rows[index];
-      if (!row) return;
-
-      editingIndex = index;
-      addBtn.textContent = "更新する";
-      setFormData(row);
-      window.scrollTo({ top: 0, behavior: "smooth" });
-      return;
-    }
-
-    if (deleteBtn) {
-      const index = Number(deleteBtn.dataset.index);
-      const row = rows[index];
-      if (!row) return;
-
-      const name = row.machineName || "この台";
-      if (!confirm(`${name} を削除しますか？`)) return;
-
-      rows.splice(index, 1);
-
-      if (editingIndex === index) {
-        clearForm();
-      } else if (editingIndex > index) {
-        editingIndex -= 1;
-      }
-
-      refreshAll();
-    }
-  });
-
-  addBtn.addEventListener("click", addOrUpdateRow);
-  clearBtn.addEventListener("click", clearForm);
-
-  window.addEventListener("resize", () => {
-    renderCharts();
-  });
-
-  // 初期化
-  loadFromStorage();
-  renderTable();
-  renderCharts();
-</script>
+    // グローバルに公開（ボタンのonclickで使うため）
+    window.editRecord = editRecord;
+    window.deleteRecord = deleteRecord;
+  </script>
+</body>
+</html>
