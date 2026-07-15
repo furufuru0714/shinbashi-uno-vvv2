@@ -330,76 +330,665 @@
         </div>
       </form>
     </section>
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>パチスロデータ管理システム 改良版</title>
+  <style>
+    :root{
+      --bg:#f4f7fb;
+      --card:#ffffff;
+      --text:#1f2937;
+      --muted:#6b7280;
+      --primary:#2563eb;
+      --primary-dark:#1d4ed8;
+      --secondary:#64748b;
+      --secondary-dark:#475569;
+      --success:#059669;
+      --success-dark:#047857;
+      --danger:#dc2626;
+      --danger-dark:#b91c1c;
+      --border:#d8e1ee;
+      --shadow:0 10px 28px rgba(0,0,0,.08);
+      --radius:14px;
+    }
 
-    <section class="card">
-      <h2 class="section-title">集計</h2>
-      <div class="summary">
-        <div class="summary-item">
-          <div class="label">登録件数</div>
-          <div class="value" id="countSummary">0</div>
-        </div>
-        <div class="summary-item">
-          <div class="label">総BONUS</div>
-          <div class="value" id="bonusSummary">0</div>
-        </div>
-        <div class="summary-item">
-          <div class="label">総BIG</div>
-          <div class="value" id="bigSummary">0</div>
-        </div>
-        <div class="summary-item">
-          <div class="label">総REG</div>
-          <div class="value" id="regSummary">0</div>
-        </div>
-      </div>
-    </section>
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;
+      background:var(--bg);
+      color:var(--text);
+    }
 
-    <section class="card">
-      <h2 class="section-title">一覧</h2>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>機種名</th>
-              <th>台番号</th>
-              <th>BONUS</th>
-              <th>BIG</th>
-              <th>REG</th>
-              <th>AT/ART</th>
-              <th>累計G</th>
-              <th>最終G</th>
-              <th>払出枚数</th>
-              <th>BIG記録</th>
-              <th>メモ</th>
-              <th>操作</th>
-            </tr>
-          </thead>
-          <tbody id="tableBody">
-            <tr>
-              <td colspan="12" class="empty">まだデータがありません。</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <div class="footer-note">
-        ※ データはこのブラウザの localStorage に保存されます。
-      </div>
-    </section>
+    .container{
+      width:min(1500px,calc(100% - 20px));
+      margin:0 auto;
+      padding:14px 0 30px;
+    }
+
+    .header{
+      background:linear-gradient(135deg,#1e3a8a,#2563eb);
+      color:#fff;
+      padding:18px 16px;
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      margin-bottom:14px;
+    }
+    .header h1{
+      margin:0 0 6px;
+      font-size:1.35rem;
+    }
+    .header p{
+      margin:0;
+      font-size:.95rem;
+      line-height:1.6;
+      opacity:.95;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:14px;
+    }
+
+    .card{
+      background:var(--card);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:16px;
+      border:1px solid var(--border);
+    }
+
+    .section-title{
+      margin:0 0 14px;
+      font-size:1.05rem;
+      font-weight:900;
+    }
+
+    .form-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:12px;
+    }
+
+    .field{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+    .field.full{grid-column:1 / -1}
+
+    label{
+      font-size:.9rem;
+      font-weight:800;
+    }
+
+    input,select,textarea{
+      width:100%;
+      padding:9px 10px;
+      border:1px solid var(--border);
+      border-radius:8px;
+      font-size:.95rem;
+      font-family:inherit;
+      background:#fff;
+      color:var(--text);
+    }
+    textarea{
+      min-height:92px;
+      resize:vertical;
+    }
+    input:focus,select:focus,textarea:focus{
+      outline:none;
+      border-color:var(--primary);
+      box-shadow:0 0 0 3px rgba(37,99,235,.12);
+    }
+
+    button{
+      padding:10px 16px;
+      border:none;
+      border-radius:10px;
+      font-size:.95rem;
+      font-weight:800;
+      cursor:pointer;
+      transition:.18s ease;
+      font-family:inherit;
+      white-space:nowrap;
+    }
+    button:hover{transform:translateY(-1px)}
+    .btn-primary{background:var(--primary);color:#fff}
+    .btn-primary:hover{background:var(--primary-dark)}
+    .btn-secondary{background:var(--secondary);color:#fff}
+    .btn-secondary:hover{background:var(--secondary-dark)}
+    .btn-success{background:var(--success);color:#fff}
+    .btn-success:hover{background:var(--success-dark)}
+    .btn-danger{background:var(--danger);color:#fff}
+    .btn-danger:hover{background:var(--danger-dark)}
+    .small-btn{
+      padding:7px 11px;
+      font-size:.84rem;
+      border-radius:8px;
+    }
+
+    .button-group{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      margin-top:14px;
+    }
+    .button-group-4{
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:10px;
+      margin-top:10px;
+    }
+
+    .summary{
+      display:grid;
+      grid-template-columns:repeat(5,minmax(0,1fr));
+      gap:12px;
+    }
+    .summary-item{
+      background:linear-gradient(180deg,#f8fbff,#eef4ff);
+      border:1px solid var(--border);
+      border-radius:12px;
+      padding:14px 12px;
+      text-align:center;
+    }
+    .summary-item .label{
+      font-size:.84rem;
+      color:var(--muted);
+      margin-bottom:6px;
+      font-weight:700;
+    }
+    .summary-item .value{
+      font-size:1.35rem;
+      font-weight:900;
+      line-height:1.1;
+    }
+    .summary-item .sub{
+      margin-top:6px;
+      font-size:.78rem;
+      color:var(--muted);
+    }
+
+    .controls{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:12px;
+      margin-bottom:8px;
+    }
+    .controls-row{
+      display:grid;
+      grid-template-columns:1.25fr .8fr .8fr .8fr;
+      gap:10px;
+    }
+    .controls-row-2{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
+
+    .note{
+      font-size:.85rem;
+      color:var(--muted);
+      line-height:1.6;
+      margin-top:8px;
+    }
+
+    .panel-title-row{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-bottom:10px;
+    }
+    .panel-title-row .right{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      padding:4px 10px;
+      border-radius:999px;
+      background:#eef2ff;
+      color:#3730a3;
+      font-size:.8rem;
+      font-weight:800;
+    }
+
+    .group-list{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+
+    details.group{
+      border:1px solid var(--border);
+      border-radius:12px;
+      background:#fff;
+      overflow:hidden;
+    }
+
+    details.group > summary{
+      list-style:none;
+      cursor:pointer;
+      padding:14px 14px;
+      background:#eff6ff;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      font-weight:900;
+      color:#1e293b;
+    }
+    details.group > summary::-webkit-details-marker{display:none}
+    .group-summary-meta{
+      font-size:.88rem;
+      color:var(--muted);
+      font-weight:700;
+    }
+    .group-body{padding:12px}
+
+    .group-stats{
+      display:grid;
+      grid-template-columns:repeat(5,minmax(0,1fr));
+      gap:10px;
+      margin-bottom:12px;
+    }
+    .mini-stat{
+      background:#f8fafc;
+      border:1px solid var(--border);
+      border-radius:10px;
+      padding:10px;
+      text-align:center;
+    }
+    .mini-stat .label{
+      font-size:.78rem;
+      color:var(--muted);
+      margin-bottom:4px;
+      font-weight:700;
+    }
+    .mini-stat .value{
+      font-size:1rem;
+      font-weight:900;
+    }
+
+    .table-wrap{
+      overflow-x:auto;
+      border:1px solid var(--border);
+      border-radius:12px;
+      background:#fff;
+    }
+
+    table{
+      width:100%;
+      min-width:1420px;
+      border-collapse:collapse;
+      background:#fff;
+    }
+    thead{background:#eff6ff}
+    th,td{
+      border-bottom:1px solid var(--border);
+      padding:10px 12px;
+      text-align:left;
+      vertical-align:middle;
+      white-space:nowrap;
+      font-size:.92rem;
+    }
+    th{
+      font-weight:900;
+      color:#1e293b;
+    }
+    th.sortable{
+      cursor:pointer;
+      user-select:none;
+    }
+    th.sortable:hover{background:#dbeafe}
+    tbody tr:hover{background:#f9fbff}
+    .empty{
+      text-align:center;
+      color:var(--muted);
+      padding:22px 12px;
+    }
+
+    .actions{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .link-btn{
+      border:none;
+      background:none;
+      color:var(--primary);
+      padding:0;
+      font:inherit;
+      font-weight:900;
+      cursor:pointer;
+      text-decoration:none;
+    }
+    .link-btn:hover{text-decoration:underline}
+
+    .diff-positive{color:#dc2626;font-weight:800}
+    .diff-negative{color:#2563eb;font-weight:800}
+    .diff-zero{color:#111827;font-weight:800}
+
+    .hint{
+      margin-top:10px;
+      font-size:.85rem;
+      color:var(--muted);
+      line-height:1.55;
+    }
+
+    .hidden{display:none}
+
+    @media (max-width: 1100px){
+      .summary{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .group-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .controls-row{grid-template-columns:1fr 1fr}
+      .button-group-4{grid-template-columns:1fr 1fr}
+    }
+    @media (max-width: 760px){
+      .form-grid{grid-template-columns:1fr}
+      .button-group,.button-group-4{grid-template-columns:1fr}
+      .summary{grid-template-columns:1fr}
+      .controls-row,.controls-row-2{grid-template-columns:1fr}
+      .header h1{font-size:1.12rem}
+      details.group > summary{
+        flex-direction:column;
+        align-items:flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h1>パチスロデータ管理システム 改良版</h1>
+      <p>
+        日付ごとの折りたたみ表示、機種別集計、検索、並び替え、CSV出力、保存/読込、JSONバックアップ/復元に対応した単一HTML版です。
+      </p>
+    </header>
+
+    <div class="grid">
+      <section class="card">
+        <h2 class="section-title">データ入力</h2>
+        <form id="dataForm">
+          <div class="form-grid">
+            <div class="field">
+              <label for="recordDate">日付</label>
+              <input type="date" id="recordDate" />
+            </div>
+
+            <div class="field">
+              <label for="machineName">機種名</label>
+              <input type="text" id="machineName" placeholder="例：L北斗の拳" />
+            </div>
+
+            <div class="field">
+              <label for="machineNo">台番号</label>
+              <input type="text" id="machineNo" placeholder="例：101" />
+            </div>
+
+            <div class="field">
+              <label for="bonus">BONUS</label>
+              <input type="number" id="bonus" min="0" step="1" value="0" />
+            </div>
+
+            <div class="field">
+              <label for="big">BIG</label>
+              <input type="number" id="big" min="0" step="1" value="0" />
+            </div>
+
+            <div class="field">
+              <label for="reg">REG</label>
+              <input type="number" id="reg" min="0" step="1" value="0" />
+            </div>
+
+            <div class="field">
+              <label for="atart">AT/ART</label>
+              <input type="number" id="atart" min="0" step="1" value="0" />
+            </div>
+
+            <div class="field">
+              <label for="totalGames">累計G</label>
+              <input type="number" id="totalGames" min="0" step="1" value="0" />
+            </div>
+
+            <div class="field">
+              <label for="lastGames">最終G</label>
+              <input type="number" id="lastGames" min="0" step="1" value="0" />
+            </div>
+
+            <div class="field">
+              <label for="payout">払出枚数</label>
+              <input type="number" id="payout" min="0" step="1" value="0" />
+            </div>
+
+            <div class="field">
+              <label for="diff">差枚</label>
+              <input type="number" id="diff" step="1" value="0" placeholder="例：1500 / -800" />
+            </div>
+
+            <div class="field">
+              <label for="bigRecord">BIG記録</label>
+              <input type="number" id="bigRecord" min="0" step="1" value="0" />
+            </div>
+
+            <div class="field full">
+              <label for="memo">メモ</label>
+              <textarea id="memo" placeholder="メモを入力"></textarea>
+            </div>
+          </div>
+
+          <div class="button-group">
+            <button type="submit" id="addBtn" class="btn-primary">追加する</button>
+            <button type="button" id="clearBtn" class="btn-secondary">クリア</button>
+          </div>
+
+          <div class="button-group-4">
+            <button type="button" id="saveDraftBtn" class="btn-success">入力内容を保存</button>
+            <button type="button" id="loadDraftBtn" class="btn-secondary">保存内容を読込</button>
+            <button type="button" id="clearDraftBtn" class="btn-danger">保存内容を削除</button>
+            <button type="button" id="resetAllBtn" class="btn-danger">全データ削除</button>
+          </div>
+
+          <div class="button-group-4">
+            <button type="button" id="backupJsonBtn" class="btn-secondary">JSONバックアップ</button>
+            <button type="button" id="restoreJsonBtn" class="btn-secondary">JSON復元</button>
+            <button type="button" id="exportCsvBtn" class="btn-success">CSV出力</button>
+            <button type="button" id="refreshBtn" class="btn-primary">表示を更新</button>
+          </div>
+
+          <input type="file" id="restoreJsonInput" class="hidden" accept=".json,application/json" />
+        </form>
+
+        <div class="hint">
+          ※ 追加前に同じ「日付＋機種名＋台番号」がある場合は確認を出します。<br>
+          ※ JSONバックアップは全データ保存、復元は上書き読み込みです。
+        </div>
+      </section>
+
+      <section class="card">
+        <h2 class="section-title">集計</h2>
+        <div class="summary">
+          <div class="summary-item">
+            <div class="label">表示件数</div>
+            <div class="value" id="countSummary">0</div>
+            <div class="sub">現在の検索結果</div>
+          </div>
+          <div class="summary-item">
+            <div class="label">総BONUS</div>
+            <div class="value" id="bonusSummary">0</div>
+            <div class="sub">表示中の合計</div>
+          </div>
+          <div class="summary-item">
+            <div class="label">総BIG</div>
+            <div class="value" id="bigSummary">0</div>
+            <div class="sub">表示中の合計</div>
+          </div>
+          <div class="summary-item">
+            <div class="label">総REG</div>
+            <div class="value" id="regSummary">0</div>
+            <div class="sub">表示中の合計</div>
+          </div>
+          <div class="summary-item">
+            <div class="label">総差枚</div>
+            <div class="value" id="diffSummary">0</div>
+            <div class="sub">表示中の合計</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="panel-title-row">
+          <h2 class="section-title" style="margin:0;">検索・並び替え</h2>
+          <div class="right">
+            <span class="badge">機種名クリックで絞り込み</span>
+            <button type="button" id="clearFilterBtn" class="btn-secondary">検索条件をクリア</button>
+            <button type="button" id="openAllBtn" class="btn-secondary">すべて開く</button>
+            <button type="button" id="closeAllBtn" class="btn-secondary">すべて閉じる</button>
+          </div>
+        </div>
+
+        <div class="controls">
+          <div class="controls-row">
+            <div class="field">
+              <label for="searchKeyword">検索キーワード</label>
+              <input type="text" id="searchKeyword" placeholder="機種名・台番号・メモ・BIG記録など" />
+            </div>
+
+            <div class="field">
+              <label for="filterDate">日付で絞り込み</label>
+              <select id="filterDate">
+                <option value="all">全日表示</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="sortField">並び替え項目</label>
+              <select id="sortField">
+                <option value="date">日付</option>
+                <option value="machineName">機種名</option>
+                <option value="machineNo">台番号</option>
+                <option value="bonus">BONUS</option>
+                <option value="big">BIG</option>
+                <option value="reg">REG</option>
+                <option value="atart">AT/ART</option>
+                <option value="totalGames">累計G</option>
+                <option value="lastGames">最終G</option>
+                <option value="payout">払出枚数</option>
+                <option value="diff">差枚</option>
+                <option value="bigRecord">BIG記録</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="sortDirection">並び順</label>
+              <select id="sortDirection">
+                <option value="desc">降順</option>
+                <option value="asc">昇順</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="note">
+          ・日付ごとに折りたたみ表示しています。<br>
+          ・並び替えは日付グループ内に反映されます。<br>
+          ・CSVは現在の検索条件で絞り込まれたデータを出力します。
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="panel-title-row">
+          <h2 class="section-title" style="margin:0;">機種ごとの集計</h2>
+          <div class="right">
+            <button type="button" id="machineRefreshBtn" class="btn-secondary">再計算</button>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table style="min-width:1100px;">
+            <thead>
+              <tr>
+                <th>機種名</th>
+                <th>件数</th>
+                <th>総BONUS</th>
+                <th>総BIG</th>
+                <th>総REG</th>
+                <th>総差枚</th>
+                <th>平均差枚</th>
+                <th>台番号</th>
+              </tr>
+            </thead>
+            <tbody id="machineSummaryBody">
+              <tr><td colspan="8" class="empty">まだデータがありません。</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="panel-title-row">
+          <h2 class="section-title" style="margin:0;">一覧（日付ごとに折りたたみ）</h2>
+          <div class="right">
+            <button type="button" id="exportCsvBtn2" class="btn-success">CSV出力</button>
+          </div>
+        </div>
+        <div id="dateGroupList" class="group-list">
+          <div class="empty">まだデータがありません。</div>
+        </div>
+      </section>
+    </div>
   </div>
 
   <script>
-    const STORAGE_KEY = "pachislot_records_v1";
+    const STORAGE_KEY = "pachislot_records_v5";
+    const DRAFT_KEY = "pachislot_draft_v3";
+    const OPEN_STATE_KEY = "pachislot_open_state_v2";
 
     const dataForm = document.getElementById("dataForm");
     const addBtn = document.getElementById("addBtn");
     const clearBtn = document.getElementById("clearBtn");
-    const tableBody = document.getElementById("tableBody");
+    const saveDraftBtn = document.getElementById("saveDraftBtn");
+    const loadDraftBtn = document.getElementById("loadDraftBtn");
+    const clearDraftBtn = document.getElementById("clearDraftBtn");
+    const resetAllBtn = document.getElementById("resetAllBtn");
+    const backupJsonBtn = document.getElementById("backupJsonBtn");
+    const restoreJsonBtn = document.getElementById("restoreJsonBtn");
+    const restoreJsonInput = document.getElementById("restoreJsonInput");
+
+    const searchKeyword = document.getElementById("searchKeyword");
+    const filterDate = document.getElementById("filterDate");
+    const sortField = document.getElementById("sortField");
+    const sortDirection = document.getElementById("sortDirection");
+    const clearFilterBtn = document.getElementById("clearFilterBtn");
+    const refreshBtn = document.getElementById("refreshBtn");
+    const machineRefreshBtn = document.getElementById("machineRefreshBtn");
+    const exportCsvBtn = document.getElementById("exportCsvBtn");
+    const exportCsvBtn2 = document.getElementById("exportCsvBtn2");
+    const openAllBtn = document.getElementById("openAllBtn");
+    const closeAllBtn = document.getElementById("closeAllBtn");
 
     const countSummary = document.getElementById("countSummary");
     const bonusSummary = document.getElementById("bonusSummary");
     const bigSummary = document.getElementById("bigSummary");
     const regSummary = document.getElementById("regSummary");
+    const diffSummary = document.getElementById("diffSummary");
+
+    const machineSummaryBody = document.getElementById("machineSummaryBody");
+    const dateGroupList = document.getElementById("dateGroupList");
 
     const fields = {
+      recordDate: document.getElementById("recordDate"),
       machineName: document.getElementById("machineName"),
       machineNo: document.getElementById("machineNo"),
       bonus: document.getElementById("bonus"),
@@ -409,20 +998,36 @@
       totalGames: document.getElementById("totalGames"),
       lastGames: document.getElementById("lastGames"),
       payout: document.getElementById("payout"),
+      diff: document.getElementById("diff"),
       bigRecord: document.getElementById("bigRecord"),
       memo: document.getElementById("memo"),
     };
 
     let records = loadRecords();
-    let editIndex = -1;
+    let editId = null;
+
+    const collator = new Intl.Collator("ja", { numeric: true, sensitivity: "base" });
+
+    function todayStr() {
+      const d = new Date();
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      return `${y}-${m}-${day}`;
+    }
+
+    function num(v) {
+      const n = Number(v);
+      return Number.isFinite(n) ? n : 0;
+    }
 
     function loadRecords() {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (!saved) return [];
       try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (!saved) return [];
         const parsed = JSON.parse(saved);
         return Array.isArray(parsed) ? parsed : [];
-      } catch (e) {
+      } catch {
         return [];
       }
     }
@@ -431,123 +1036,85 @@
       localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
     }
 
-    function getFormData() {
+    function loadOpenState() {
+      try {
+        const saved = localStorage.getItem(OPEN_STATE_KEY);
+        if (!saved) return {};
+        const parsed = JSON.parse(saved);
+        return parsed && typeof parsed === "object" ? parsed : {};
+      } catch {
+        return {};
+      }
+    }
+
+    function saveOpenState(state) {
+      localStorage.setItem(OPEN_STATE_KEY, JSON.stringify(state));
+    }
+
+    function loadDraftObj() {
+      try {
+        const saved = localStorage.getItem(DRAFT_KEY);
+        if (!saved) return null;
+        const parsed = JSON.parse(saved);
+        return parsed && typeof parsed === "object" ? parsed : null;
+      } catch {
+        return null;
+      }
+    }
+
+    function getFormRecord() {
       return {
+        id: editId || `${Date.now()}_${Math.random().toString(36).slice(2, 9)}`,
+        date: fields.recordDate.value || todayStr(),
         machineName: fields.machineName.value.trim(),
         machineNo: fields.machineNo.value.trim(),
-        bonus: Number(fields.bonus.value || 0),
-        big: Number(fields.big.value || 0),
-        reg: Number(fields.reg.value || 0),
-        atart: Number(fields.atart.value || 0),
-        totalGames: Number(fields.totalGames.value || 0),
-        lastGames: Number(fields.lastGames.value || 0),
-        payout: Number(fields.payout.value || 0),
-        bigRecord: Number(fields.bigRecord.value || 0),
+        bonus: num(fields.bonus.value),
+        big: num(fields.big.value),
+        reg: num(fields.reg.value),
+        atart: num(fields.atart.value),
+        totalGames: num(fields.totalGames.value),
+        lastGames: num(fields.lastGames.value),
+        payout: num(fields.payout.value),
+        diff: num(fields.diff.value),
+        bigRecord: num(fields.bigRecord.value),
         memo: fields.memo.value.trim(),
-        createdAt: new Date().toISOString()
+        createdAt: editId ? (findRecordById(editId)?.createdAt || new Date().toISOString()) : new Date().toISOString()
       };
     }
 
-    function setFormData(record) {
-      fields.machineName.value = record.machineName || "";
-      fields.machineNo.value = record.machineNo || "";
-      fields.bonus.value = record.bonus ?? 0;
-      fields.big.value = record.big ?? 0;
-      fields.reg.value = record.reg ?? 0;
-      fields.atart.value = record.atart ?? 0;
-      fields.totalGames.value = record.totalGames ?? 0;
-      fields.lastGames.value = record.lastGames ?? 0;
-      fields.payout.value = record.payout ?? 0;
-      fields.bigRecord.value = record.bigRecord ?? 0;
-      fields.memo.value = record.memo || "";
+    function setFormRecord(r) {
+      fields.recordDate.value = r.date || todayStr();
+      fields.machineName.value = r.machineName || "";
+      fields.machineNo.value = r.machineNo || "";
+      fields.bonus.value = r.bonus ?? 0;
+      fields.big.value = r.big ?? 0;
+      fields.reg.value = r.reg ?? 0;
+      fields.atart.value = r.atart ?? 0;
+      fields.totalGames.value = r.totalGames ?? 0;
+      fields.lastGames.value = r.lastGames ?? 0;
+      fields.payout.value = r.payout ?? 0;
+      fields.diff.value = r.diff ?? 0;
+      fields.bigRecord.value = r.bigRecord ?? 0;
+      fields.memo.value = r.memo || "";
     }
 
     function clearForm() {
       dataForm.reset();
-      editIndex = -1;
+      fields.recordDate.value = todayStr();
+      editId = null;
       addBtn.textContent = "追加する";
       fields.machineName.focus();
     }
 
-    function validateRecord(record) {
-      if (!record.machineName) {
-        alert("機種名を入力してください。");
-        return false;
-      }
-      if (!record.machineNo) {
-        alert("台番号を入力してください。");
-        return false;
-      }
+    function validateRecord(r) {
+      if (!r.date) return alert("日付を入力してください。"), false;
+      if (!r.machineName) return alert("機種名を入力してください。"), false;
+      if (!r.machineNo) return alert("台番号を入力してください。"), false;
       return true;
     }
 
-    function addOrUpdateRow() {
-      const record = getFormData();
-
-      if (!validateRecord(record)) return;
-
-      if (editIndex >= 0) {
-        records[editIndex] = record;
-      } else {
-        records.unshift(record);
-      }
-
-      saveRecords();
-      renderTable();
-      renderSummary();
-      clearForm();
-    }
-
-    function editRecord(index) {
-      editIndex = index;
-      setFormData(records[index]);
-      addBtn.textContent = "更新する";
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-
-    function deleteRecord(index) {
-      if (!confirm("このデータを削除しますか？")) return;
-      records.splice(index, 1);
-      saveRecords();
-      renderTable();
-      renderSummary();
-      if (editIndex === index) clearForm();
-    }
-
-    function renderSummary() {
-      countSummary.textContent = records.length;
-      bonusSummary.textContent = records.reduce((sum, r) => sum + Number(r.bonus || 0), 0);
-      bigSummary.textContent = records.reduce((sum, r) => sum + Number(r.big || 0), 0);
-      regSummary.textContent = records.reduce((sum, r) => sum + Number(r.reg || 0), 0);
-    }
-
-    function renderTable() {
-      if (!records.length) {
-        tableBody.innerHTML = `<tr><td colspan="12" class="empty">まだデータがありません。</td></tr>`;
-        return;
-      }
-
-      tableBody.innerHTML = records.map((record, index) => `
-        <tr>
-          <td>${escapeHtml(record.machineName)}</td>
-          <td>${escapeHtml(record.machineNo)}</td>
-          <td>${record.bonus}</td>
-          <td>${record.big}</td>
-          <td>${record.reg}</td>
-          <td>${record.atart}</td>
-          <td>${record.totalGames}</td>
-          <td>${record.lastGames}</td>
-          <td>${record.payout}</td>
-          <td>${record.bigRecord}</td>
-          <td>${escapeHtml(record.memo || "")}</td>
-          <td>
-            <div class="actions">
-              <button type="button" class="small-btn btn-secondary" onclick="editRecord(${index})">編集</button>
-              <button type="button" class="small-btn btn-danger" onclick="deleteRecord(${index})">削除</button>
-            </div>
-          </td>
-        </tr>
-      `).join("");
+    function findRecordById(id) {
+      return records.find(r => r.id === id);
     }
 
     function escapeHtml(text) {
@@ -559,24 +1126,582 @@
         .replaceAll("'", "&#039;");
     }
 
-    addBtn.addEventListener("click", (e) => {
+    function csvEscape(value) {
+      const str = String(value ?? "");
+      return `"${str.replaceAll('"', '""')}"`;
+    }
+
+    function formatSigned(value) {
+      const n = num(value);
+      if (n > 0) return `+${n}`;
+      return String(n);
+    }
+
+    function diffClass(value) {
+      const n = num(value);
+      if (n > 0) return "diff-positive";
+      if (n < 0) return "diff-negative";
+      return "diff-zero";
+    }
+
+    function refreshDateOptions() {
+      const current = filterDate.value || "all";
+      const dates = [...new Set(records.map(r => r.date).filter(Boolean))].sort((a, b) => b.localeCompare(a));
+      filterDate.innerHTML = `<option value="all">全日表示</option>` + dates.map(d => `<option value="${d}">${d}</option>`).join("");
+      filterDate.value = [...filterDate.options].some(o => o.value === current) ? current : "all";
+    }
+
+    function getFilteredRecords() {
+      const keyword = searchKeyword.value.trim().toLowerCase();
+      const selectedDate = filterDate.value;
+
+      return records.filter(r => {
+        const dateMatch = selectedDate === "all" || r.date === selectedDate;
+        const haystack = [
+          r.date,
+          r.machineName,
+          r.machineNo,
+          r.memo,
+          r.bigRecord
+        ].join(" ").toLowerCase();
+        const keywordMatch = !keyword || haystack.includes(keyword);
+        return dateMatch && keywordMatch;
+      });
+    }
+
+    function compareField(a, b, field, direction) {
+      const asc = direction === "asc";
+      const numericFields = new Set([
+        "bonus","big","reg","atart","totalGames","lastGames","payout","diff","bigRecord"
+      ]);
+
+      if (field === "date") {
+        const result = (a.date || "").localeCompare(b.date || "");
+        return asc ? result : -result;
+      }
+
+      if (numericFields.has(field)) {
+        const result = num(a[field]) - num(b[field]);
+        return asc ? result : -result;
+      }
+
+      const result = collator.compare(String(a[field] || ""), String(b[field] || ""));
+      return asc ? result : -result;
+    }
+
+    function sortRecords(list) {
+      const field = sortField.value;
+      const direction = sortDirection.value;
+
+      return [...list].sort((a, b) => {
+        if (field === "date") {
+          const created = (a.createdAt || "").localeCompare(b.createdAt || "");
+          return direction === "asc" ? created : -created;
+        }
+
+        const primary = compareField(a, b, field, direction);
+        if (primary !== 0) return primary;
+
+        const fallback = (b.createdAt || "").localeCompare(a.createdAt || "");
+        return fallback;
+      });
+    }
+
+    function groupByDate(list) {
+      const map = new Map();
+      for (const r of list) {
+        const key = r.date || "未設定";
+        if (!map.has(key)) map.set(key, []);
+        map.get(key).push(r);
+      }
+
+      const keys = [...map.keys()];
+      const sortedKeys = keys.sort((a, b) => {
+        if (a === "未設定") return 1;
+        if (b === "未設定") return -1;
+
+        if (sortField.value === "date") {
+          return sortDirection.value === "asc" ? a.localeCompare(b) : b.localeCompare(a);
+        }
+        return b.localeCompare(a);
+      });
+
+      return sortedKeys.map(date => ({ date, items: map.get(date) }));
+    }
+
+    function renderSummary() {
+      const filtered = getFilteredRecords();
+      const bonusTotal = filtered.reduce((s, r) => s + num(r.bonus), 0);
+      const bigTotal = filtered.reduce((s, r) => s + num(r.big), 0);
+      const regTotal = filtered.reduce((s, r) => s + num(r.reg), 0);
+      const diffTotal = filtered.reduce((s, r) => s + num(r.diff), 0);
+
+      countSummary.textContent = filtered.length;
+      bonusSummary.textContent = bonusTotal;
+      bigSummary.textContent = bigTotal;
+      regSummary.textContent = regTotal;
+      diffSummary.textContent = diffTotal;
+    }
+
+    function renderMachineSummary() {
+      const filtered = getFilteredRecords();
+      if (!filtered.length) {
+        machineSummaryBody.innerHTML = `<tr><td colspan="8" class="empty">表示できるデータがありません。</td></tr>`;
+        return;
+      }
+
+      const map = new Map();
+
+      for (const r of filtered) {
+        const key = r.machineName || "";
+        if (!map.has(key)) {
+          map.set(key, {
+            machineName: key,
+            count: 0,
+            bonus: 0,
+            big: 0,
+            reg: 0,
+            diff: 0,
+            noSet: new Set()
+          });
+        }
+        const item = map.get(key);
+        item.count += 1;
+        item.bonus += num(r.bonus);
+        item.big += num(r.big);
+        item.reg += num(r.reg);
+        item.diff += num(r.diff);
+        if (r.machineNo) item.noSet.add(r.machineNo);
+      }
+
+      const rows = [...map.values()]
+        .sort((a, b) => {
+          if (b.diff !== a.diff) return b.diff - a.diff;
+          if (b.count !== a.count) return b.count - a.count;
+          return collator.compare(a.machineName, b.machineName);
+        })
+        .map(item => `
+          <tr>
+            <td><button type="button" class="link-btn machine-filter-btn" data-machine="${escapeHtml(item.machineName)}">${escapeHtml(item.machineName)}</button></td>
+            <td>${item.count}</td>
+            <td>${item.bonus}</td>
+            <td>${item.big}</td>
+            <td>${item.reg}</td>
+            <td class="${diffClass(item.diff)}">${formatSigned(item.diff)}</td>
+            <td>${item.count ? (item.diff / item.count).toFixed(1) : "0.0"}</td>
+            <td>${escapeHtml([...item.noSet].join(", "))}</td>
+          </tr>
+        `).join("");
+
+      machineSummaryBody.innerHTML = rows || `<tr><td colspan="8" class="empty">表示できるデータがありません。</td></tr>`;
+    }
+
+    function renderDateGroups() {
+      const filtered = getFilteredRecords();
+      const openState = loadOpenState();
+
+      if (!filtered.length) {
+        dateGroupList.innerHTML = `<div class="empty">表示できるデータがありません。</div>`;
+        return;
+      }
+
+      const grouped = groupByDate(filtered);
+
+      dateGroupList.innerHTML = grouped.map(group => {
+        const items = sortRecords(group.items);
+        const count = items.length;
+        const sumBonus = items.reduce((s, r) => s + num(r.bonus), 0);
+        const sumBig = items.reduce((s, r) => s + num(r.big), 0);
+        const sumReg = items.reduce((s, r) => s + num(r.reg), 0);
+        const sumDiff = items.reduce((s, r) => s + num(r.diff), 0);
+
+        const rows = items.map(r => `
+          <tr>
+            <td>${escapeHtml(r.machineName)}</td>
+            <td>${escapeHtml(r.machineNo)}</td>
+            <td>${num(r.bonus)}</td>
+            <td>${num(r.big)}</td>
+            <td>${num(r.reg)}</td>
+            <td>${num(r.atart)}</td>
+            <td>${num(r.totalGames)}</td>
+            <td>${num(r.lastGames)}</td>
+            <td>${num(r.payout)}</td>
+            <td class="${diffClass(r.diff)}">${formatSigned(r.diff)}</td>
+            <td>${num(r.bigRecord)}</td>
+            <td>${escapeHtml(r.memo || "")}</td>
+            <td>
+              <div class="actions">
+                <button type="button" class="small-btn btn-secondary" data-action="edit" data-id="${r.id}">編集</button>
+                <button type="button" class="small-btn btn-danger" data-action="delete" data-id="${r.id}">削除</button>
+              </div>
+            </td>
+          </tr>
+        `).join("");
+
+        const isOpen = openState[group.date] !== undefined ? !!openState[group.date] : true;
+
+        return `
+          <details class="group" data-date="${escapeHtml(group.date)}" ${isOpen ? "open" : ""}>
+            <summary>
+              <span>${escapeHtml(group.date)}</span>
+              <span class="group-summary-meta">
+                件数: ${count} / BONUS: ${sumBonus} / BIG: ${sumBig} / REG: ${sumReg} / 差枚: ${formatSigned(sumDiff)}
+              </span>
+            </summary>
+            <div class="group-body">
+              <div class="group-stats">
+                <div class="mini-stat"><div class="label">件数</div><div class="value">${count}</div></div>
+                <div class="mini-stat"><div class="label">BONUS</div><div class="value">${sumBonus}</div></div>
+                <div class="mini-stat"><div class="label">BIG</div><div class="value">${sumBig}</div></div>
+                <div class="mini-stat"><div class="label">REG</div><div class="value">${sumReg}</div></div>
+                <div class="mini-stat"><div class="label">差枚</div><div class="value ${diffClass(sumDiff)}">${formatSigned(sumDiff)}</div></div>
+              </div>
+
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>機種名</th>
+                      <th>台番号</th>
+                      <th>BONUS</th>
+                      <th>BIG</th>
+                      <th>REG</th>
+                      <th>AT/ART</th>
+                      <th>累計G</th>
+                      <th>最終G</th>
+                      <th>払出枚数</th>
+                      <th>差枚</th>
+                      <th>BIG記録</th>
+                      <th>メモ</th>
+                      <th>操作</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${rows || `<tr><td colspan="13" class="empty">この日付のデータはありません。</td></tr>`}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </details>
+        `;
+      }).join("");
+
+      document.querySelectorAll("details.group").forEach(details => {
+        details.addEventListener("toggle", () => {
+          const state = loadOpenState();
+          state[details.dataset.date] = details.open;
+          saveOpenState(state);
+        });
+      });
+    }
+
+    function renderAll() {
+      renderSummary();
+      renderMachineSummary();
+      renderDateGroups();
+    }
+
+    function openDateGroup(date) {
+      const el = document.querySelector(`details.group[data-date="${CSS.escape(date)}"]`);
+      if (!el) return;
+      el.open = true;
+      const state = loadOpenState();
+      state[date] = true;
+      saveOpenState(state);
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+
+    function editRecord(id) {
+      const record = findRecordById(id);
+      if (!record) return;
+      editId = id;
+      setFormRecord(record);
+      addBtn.textContent = "更新する";
+      renderAll();
+      openDateGroup(record.date);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function deleteRecord(id) {
+      const record = findRecordById(id);
+      if (!record) return;
+      if (!confirm("このデータを削除しますか？")) return;
+
+      records = records.filter(r => r.id !== id);
+      saveRecords();
+      refreshDateOptions();
+      renderAll();
+
+      if (editId === id) clearForm();
+    }
+
+    function addOrUpdateRecord() {
+      const record = getFormRecord();
+      if (!validateRecord(record)) return;
+
+      if (!editId) {
+        const duplicate = records.find(r =>
+          r.date === record.date &&
+          r.machineName === record.machineName &&
+          r.machineNo === record.machineNo
+        );
+        if (duplicate) {
+          const ok = confirm("同じ日付・機種名・台番号のデータがあります。続けて追加しますか？");
+          if (!ok) return;
+        }
+      }
+
+      const index = records.findIndex(r => r.id === editId);
+      if (index >= 0) {
+        records[index] = record;
+      } else {
+        records.unshift(record);
+      }
+
+      saveRecords();
+      refreshDateOptions();
+      renderAll();
+      clearForm();
+    }
+
+    function applyMachineFilter(machineName) {
+      searchKeyword.value = machineName;
+      renderAll();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function exportCsv() {
+      const filtered = sortRecords(getFilteredRecords());
+      if (!filtered.length) {
+        alert("出力できるデータがありません。");
+        return;
+      }
+
+      const headers = [
+        "日付","機種名","台番号","BONUS","BIG","REG","AT/ART","累計G","最終G","払出枚数","差枚","BIG記録","メモ"
+      ];
+
+      const rows = filtered.map(r => [
+        r.date || "",
+        r.machineName || "",
+        r.machineNo || "",
+        num(r.bonus),
+        num(r.big),
+        num(r.reg),
+        num(r.atart),
+        num(r.totalGames),
+        num(r.lastGames),
+        num(r.payout),
+        num(r.diff),
+        num(r.bigRecord),
+        r.memo || ""
+      ]);
+
+      const csv = [
+        headers.map(csvEscape).join(","),
+        ...rows.map(row => row.map(csvEscape).join(","))
+      ].join("\r\n");
+
+      const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `pachislot_records_${filterDate.value === "all" ? "all" : filterDate.value}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function saveDraft() {
+      const draft = {
+        recordDate: fields.recordDate.value,
+        machineName: fields.machineName.value,
+        machineNo: fields.machineNo.value,
+        bonus: fields.bonus.value,
+        big: fields.big.value,
+        reg: fields.reg.value,
+        atart: fields.atart.value,
+        totalGames: fields.totalGames.value,
+        lastGames: fields.lastGames.value,
+        payout: fields.payout.value,
+        diff: fields.diff.value,
+        bigRecord: fields.bigRecord.value,
+        memo: fields.memo.value
+      };
+      localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+      alert("入力内容を保存しました。");
+    }
+
+    function loadDraft() {
+      const draft = loadDraftObj();
+      if (!draft) {
+        alert("保存された入力内容がありません。");
+        return;
+      }
+      fields.recordDate.value = draft.recordDate || todayStr();
+      fields.machineName.value = draft.machineName || "";
+      fields.machineNo.value = draft.machineNo || "";
+      fields.bonus.value = draft.bonus ?? 0;
+      fields.big.value = draft.big ?? 0;
+      fields.reg.value = draft.reg ?? 0;
+      fields.atart.value = draft.atart ?? 0;
+      fields.totalGames.value = draft.totalGames ?? 0;
+      fields.lastGames.value = draft.lastGames ?? 0;
+      fields.payout.value = draft.payout ?? 0;
+      fields.diff.value = draft.diff ?? 0;
+      fields.bigRecord.value = draft.bigRecord ?? 0;
+      fields.memo.value = draft.memo || "";
+      alert("保存内容を読み込みました。");
+    }
+
+    function clearDraft() {
+      if (!confirm("保存した入力内容を削除しますか？")) return;
+      localStorage.removeItem(DRAFT_KEY);
+      alert("保存内容を削除しました。");
+    }
+
+    function resetAllRecords() {
+      if (!confirm("全データを削除しますか？この操作は元に戻せません。")) return;
+      records = [];
+      editId = null;
+      saveRecords();
+      refreshDateOptions();
+      renderAll();
+      clearForm();
+    }
+
+    function openCloseAll(open) {
+      document.querySelectorAll("details.group").forEach(el => {
+        el.open = open;
+      });
+      const state = loadOpenState();
+      document.querySelectorAll("details.group").forEach(el => {
+        state[el.dataset.date] = open;
+      });
+      saveOpenState(state);
+    }
+
+    function backupJson() {
+      const blob = new Blob([JSON.stringify(records, null, 2)], { type: "application/json;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `pachislot_backup_${todayStr()}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function restoreFromJsonFile(file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const data = JSON.parse(String(reader.result || ""));
+          if (!Array.isArray(data)) {
+            alert("JSON形式が正しくありません。");
+            return;
+          }
+
+          const ok = confirm("JSONを読み込みます。現在のデータは上書きされます。よろしいですか？");
+          if (!ok) return;
+
+          records = data.map(item => ({
+            id: item.id || `${Date.now()}_${Math.random().toString(36).slice(2, 9)}`,
+            date: item.date || "",
+            machineName: item.machineName || "",
+            machineNo: item.machineNo || "",
+            bonus: num(item.bonus),
+            big: num(item.big),
+            reg: num(item.reg),
+            atart: num(item.atart),
+            totalGames: num(item.totalGames),
+            lastGames: num(item.lastGames),
+            payout: num(item.payout),
+            diff: num(item.diff),
+            bigRecord: num(item.bigRecord),
+            memo: item.memo || "",
+            createdAt: item.createdAt || new Date().toISOString()
+          }));
+
+          saveRecords();
+          refreshDateOptions();
+          renderAll();
+          clearForm();
+          alert("JSONを復元しました。");
+        } catch {
+          alert("JSONの読み込みに失敗しました。");
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    // events
+    dataForm.addEventListener("submit", (e) => {
       e.preventDefault();
-      addOrUpdateRow();
+      addOrUpdateRecord();
     });
 
-    clearBtn.addEventListener("click", (e) => {
-      e.preventDefault();
+    clearBtn.addEventListener("click", () => {
       clearForm();
     });
 
-    document.addEventListener("DOMContentLoaded", () => {
-      renderTable();
-      renderSummary();
+    saveDraftBtn.addEventListener("click", saveDraft);
+    loadDraftBtn.addEventListener("click", loadDraft);
+    clearDraftBtn.addEventListener("click", clearDraft);
+    resetAllBtn.addEventListener("click", resetAllRecords);
+    backupJsonBtn.addEventListener("click", backupJson);
+    restoreJsonBtn.addEventListener("click", () => restoreJsonInput.click());
+    restoreJsonInput.addEventListener("change", () => {
+      const file = restoreJsonInput.files && restoreJsonInput.files[0];
+      if (file) restoreFromJsonFile(file);
+      restoreJsonInput.value = "";
     });
 
-    // グローバルに公開（ボタンのonclickで使うため）
-    window.editRecord = editRecord;
-    window.deleteRecord = deleteRecord;
+    searchKeyword.addEventListener("input", renderAll);
+    filterDate.addEventListener("change", renderAll);
+    sortField.addEventListener("change", renderAll);
+    sortDirection.addEventListener("change", renderAll);
+
+    clearFilterBtn.addEventListener("click", () => {
+      searchKeyword.value = "";
+      filterDate.value = "all";
+      sortField.value = "date";
+      sortDirection.value = "desc";
+      renderAll();
+    });
+
+    refreshBtn.addEventListener("click", renderAll);
+    machineRefreshBtn.addEventListener("click", renderMachineSummary);
+    exportCsvBtn.addEventListener("click", exportCsv);
+    exportCsvBtn2.addEventListener("click", exportCsv);
+    openAllBtn.addEventListener("click", () => openCloseAll(true));
+    closeAllBtn.addEventListener("click", () => openCloseAll(false));
+
+    machineSummaryBody.addEventListener("click", (e) => {
+      const btn = e.target.closest(".machine-filter-btn");
+      if (!btn) return;
+      applyMachineFilter(btn.dataset.machine || "");
+    });
+
+    dateGroupList.addEventListener("click", (e) => {
+      const btn = e.target.closest("button[data-action]");
+      if (!btn) return;
+
+      const id = btn.dataset.id;
+      const action = btn.dataset.action;
+      if (!id || !action) return;
+
+      if (action === "edit") editRecord(id);
+      if (action === "delete") deleteRecord(id);
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+      fields.recordDate.value = todayStr();
+      refreshDateOptions();
+      renderAll();
+    });
   </script>
 </body>
 </html>
