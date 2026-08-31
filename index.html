@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>スロット勝台予測ツール - 新橋UNO ヴァルヴレイヴ2</title>
+    <title>スロット勝台予測ツール - 新橋UNO店</title>
     <style>
         * {
             margin: 0;
@@ -12,323 +12,664 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
+            font-family: 'Arial', 'Hiragino Sans', sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+            color: #333;
+            line-height: 1.6;
         }
 
+        /* ヘッダ */
+        header {
+            background: #000;
+            padding: 20px 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .header-logo {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            display: block;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 255, 255, 0.3);
+        }
+
+        /* メインコンテナ */
         .container {
             max-width: 1200px;
             margin: 0 auto;
-        }
-
-        /* ヘッダー */
-        .header {
-            background: white;
-            border-radius: 12px;
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            text-align: center;
-        }
-
-        .header h1 {
-            color: #333;
-            font-size: 28px;
-            margin-bottom: 10px;
-        }
-
-        .header p {
-            color: #666;
-            font-size: 16px;
-        }
-
-        /* メインコンテンツ */
-        .main-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 25px;
-            margin-bottom: 30px;
-        }
-
-        /* カード共通スタイル */
-        .card {
-            background: white;
-            border-radius: 12px;
-            padding: 25px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.15);
-        }
-
-        .card h2 {
-            color: #333;
-            font-size: 18px;
-            margin-bottom: 15px;
-            border-bottom: 3px solid #667eea;
-            padding-bottom: 10px;
-        }
-
-        /* 収支カード */
-        .balance-card {
-            text-align: center;
-            grid-column: span 1;
-        }
-
-        .balance-amount {
-            font-size: 36px;
-            font-weight: bold;
-            margin: 20px 0;
             padding: 20px;
-            border-radius: 8px;
-            background: #f0f4ff;
         }
 
-        .balance-amount.positive {
-            color: #2ecc71;
+        /* 収支セクション */
+        .income-section {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
 
-        .balance-amount.negative {
-            color: #e74c3c;
-        }
-
-        /* 推奨台カード */
-        .recommend-card {
-            grid-column: span auto;
-        }
-
-        .machine-item {
+        .income-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 15px;
-            margin: 10px 0;
-            background: #f8f9fa;
-            border-left: 4px solid #667eea;
-            border-radius: 6px;
+            flex-wrap: wrap;
+            gap: 15px;
         }
 
-        .machine-name {
-            font-weight: 600;
-            color: #333;
-            font-size: 16px;
-        }
-
-        .machine-probability {
-            font-size: 18px;
+        .income-title {
+            font-size: 20px;
             font-weight: bold;
-            color: #667eea;
+            color: #333;
         }
 
-        /* イベント情報カード */
-        .event-card {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        .income-amount {
+            font-size: 36px;
+            font-weight: bold;
+            color: #ff4444;
+        }
+
+        .income-amount.positive {
+            color: #44cc44;
+        }
+
+        .history-link {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            grid-column: span 1;
-        }
-
-        .event-card h2 {
-            color: white;
-            border-bottom-color: rgba(255, 255, 255, 0.3);
-        }
-
-        .event-item {
-            background: rgba(255, 255, 255, 0.2);
-            padding: 12px;
-            margin: 10px 0;
-            border-radius: 6px;
-            font-size: 15px;
-        }
-
-        /* ナビゲーション */
-        .nav-buttons {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .nav-button {
-            background: white;
+            padding: 12px 24px;
             border: none;
-            padding: 25px;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
+            border-radius: 6px;
             cursor: pointer;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            font-size: 16px;
+            font-weight: bold;
             transition: all 0.3s ease;
             text-decoration: none;
             display: inline-block;
-            text-align: center;
+        }
+
+        .history-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        /* イベント情報 */
+        .event-section {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .event-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
             color: #333;
         }
 
-        .nav-button:hover {
-            background: #667eea;
-            color: white;
-            transform: translateY(-3px);
-            box-shadow: 0 12px 48px rgba(102, 126, 234, 0.4);
+        .event-info {
+            background: #f0f8ff;
+            padding: 15px;
+            border-left: 4px solid #667eea;
+            border-radius: 4px;
+            margin-bottom: 10px;
         }
 
-        /* フッター */
-        .footer {
-            text-align: center;
-            color: white;
+        /* おすすめ台セクション */
+        .recommend-section {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .recommend-header {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .machine-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .machine-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             padding: 20px;
+            border-radius: 10px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(102, 126, 234, 0.3);
+        }
+
+        .machine-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        .machine-rank {
             font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .machine-number {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .machine-probability {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .machine-info {
+            font-size: 12px;
+            opacity: 0.85;
+        }
+
+        /* ドロップダウンボタン */
+        .dropdown-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            width: 100%;
+            text-align: center;
+        }
+
+        .dropdown-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .dropdown-button.active::after {
+            content: "▲";
+        }
+
+        .dropdown-button:not(.active)::after {
+            content: "▼";
+        }
+
+        /* ドロップダウン内容 */
+        .dropdown-content {
+            display: none;
+            margin-top: 15px;
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .dropdown-content.active {
+            display: block;
+        }
+
+        .all-machines-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 10px;
+            padding: 15px;
+        }
+
+        .machine-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .machine-item:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 10px rgba(102, 126, 234, 0.2);
+            background: #f0f4ff;
+        }
+
+        .machine-item-number {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .machine-item-probability {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 8px;
+        }
+
+        .machine-item-explanation {
+            display: none;
+            background: #f0f4ff;
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 10px;
+            border-left: 4px solid #667eea;
+            font-size: 13px;
+            color: #555;
+            line-height: 1.5;
+        }
+
+        .machine-item.expanded .machine-item-explanation {
+            display: block;
+        }
+
+        /* ナビゲーション */
+        .nav-section {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .nav-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+
+        .nav-link {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 6px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: block;
+            font-weight: bold;
+        }
+
+        .nav-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        /* フッタ */
+        footer {
+            background: #000;
+            color: #888;
+            text-align: center;
+            padding: 20px;
+            margin-top: 40px;
+            font-size: 12px;
         }
 
         /* レスポンシブ */
         @media (max-width: 768px) {
-            .header {
-                padding: 20px;
-            }
-
-            .header h1 {
-                font-size: 22px;
-            }
-
-            .main-grid {
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
-
-            .card {
-                padding: 20px;
-            }
-
-            .balance-amount {
+            .income-amount {
                 font-size: 28px;
             }
 
-            .machine-item {
+            .machine-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .machine-probability {
+                font-size: 24px;
+            }
+
+            .income-header {
                 flex-direction: column;
                 align-items: flex-start;
             }
 
-            .machine-probability {
-                margin-top: 10px;
-            }
-
-            .nav-buttons {
-                grid-template-columns: 1fr;
+            .recommend-header {
+                font-size: 18px;
             }
         }
 
         @media (max-width: 480px) {
-            body {
-                padding: 10px;
-            }
-
-            .header h1 {
-                font-size: 20px;
-            }
-
-            .header {
+            .container {
                 padding: 15px;
             }
 
-            .card {
+            .income-section, .event-section, .recommend-section, .nav-section {
                 padding: 15px;
             }
 
-            .card h2 {
-                font-size: 16px;
-            }
-
-            .balance-amount {
+            .income-amount {
                 font-size: 24px;
             }
 
-            .machine-name {
-                font-size: 14px;
+            .machine-number {
+                font-size: 20px;
+            }
+
+            .machine-probability {
+                font-size: 20px;
+            }
+
+            .all-machines-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
 </head>
 <body>
+    <!-- ヘッダ -->
+    <header>
+        <div class="header-container">
+            <img src="https://felzqwdxfitazkrktyke.supabase.co/storage/v1/object/sign/generated-images/31310da0-da9f-4b89-b381-df7950a88501/3bb8ecb4-8639-442f-b006-17e249ed2b30.png?token=eyJraWQiOiJmMjEyMGYxYS1jYTU4LTRhMWQtOGJmYS1kMmViZGZmNWE5YmMiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJnZW5lcmF0ZWQtaW1hZ2VzLzMxMzEwZGEwLWRhOWYtNGI4OS1iMzgxLWRmNzk1MGE4ODUwMS8zYmI4ZWNiNC04NjM5LTQ0MmYtYjAwNi0xN2UyNDllZDJiMzAucG5nIiwic2NvcGUiOiJkb3dubG9hZCIsImlhdCI6MTc4NzkxMDM2OCwiZXhwIjoxNzg3OTEyMTY4fQ.trl8IsZOVaWvIDLPWYuMu2NneXmmozHUsy31UuyWpLk" alt="スロット勝台予測ツール" class="header-logo">
+        </div>
+    </header>
+
+    <!-- メインコンテンツ -->
     <div class="container">
-        <!-- ヘッダー -->
-        <div class="header">
-            <h1>🎰 スロット勝台予測ツール</h1>
-            <p>新橋UNO - Lパチスロ 革命機ヴァルヴレイヴ2</p>
+        <!-- 現在の収支 -->
+        <div class="income-section">
+            <div class="income-header">
+                <div>
+                    <div class="income-title">現在の収支</div>
+                    <div class="income-amount positive">+¥45,800</div>
+                </div>
+                <a href="history.html" class="history-link">過去の収支履歴を見る</a>
+            </div>
         </div>
 
-        <!-- 収支情報 -->
-        <div class="main-grid">
-            <div class="card balance-card">
-                <h2>📊 現在の収支</h2>
-                <div class="balance-amount positive" id="balanceAmount">
-                    +¥125,500
+        <!-- イベント情報 -->
+        <div class="event-section">
+            <div class="event-title">📅 イベント情報 & 訪問のおすすめ日</div>
+            <div class="event-info">
+                <strong>2026年8月28日（木）：通常営業</strong>
+                <p style="margin-top: 8px; font-size: 14px;">イベントなし。通常の台の流れで判定されています。</p>
+            </div>
+            <div class="event-info">
+                <strong>🎯 次回おすすめ訪問日：2026年9月4日（木）</strong>
+                <p style="margin-top: 8px; font-size: 14px;">新台導入予定日。新しい台が投入され、流れが変わる見込みです。</p>
+            </div>
+        </div>
+
+        <!-- 本日のおすすめ台 -->
+        <div class="recommend-section">
+            <div class="recommend-header">🎰 本日のおすすめ台 TOP3</div>
+            <div class="machine-grid">
+                <!-- 1位 -->
+                <div class="machine-card">
+                    <div class="machine-rank">🥇 第1位</div>
+                    <div class="machine-number">台番号：5番台</div>
+                    <div class="machine-probability">勝率 78%</div>
+                    <div class="machine-info">機種：Lパチスロ 革命機ヴァルヴレイヴ2</div>
                 </div>
-                <p style="color: #666; font-size: 14px;">
-                    前回訪問時からの合計収支
-                </p>
+
+                <!-- 2位 -->
+                <div class="machine-card">
+                    <div class="machine-rank">🥈 第2位</div>
+                    <div class="machine-number">台番号：12番台</div>
+                    <div class="machine-probability">勝率 72%</div>
+                    <div class="machine-info">機種：Lパチスロ 革命機ヴァルヴレイヴ2</div>
+                </div>
+
+                <!-- 3位 -->
+                <div class="machine-card">
+                    <div class="machine-rank">🥉 第3位</div>
+                    <div class="machine-number">台番号：18番台</div>
+                    <div class="machine-probability">勝率 68%</div>
+                    <div class="machine-info">機種：Lパチスロ 革命機ヴァルヴレイヴ2</div>
+                </div>
             </div>
 
-            <!-- 推奨台情報 -->
-            <div class="card recommend-card">
-                <h2>⭐ 本日のおすすめ台</h2>
-                <div class="machine-item">
-                    <span class="machine-name">0503番台</span>
-                    <span class="machine-probability">85%</span>
-                </div>
-                <div class="machine-item">
-                    <span class="machine-name">0507番台</span>
-                    <span class="machine-probability">78%</span>
-                </div>
-                <div class="machine-item">
-                    <span class="machine-name">0501番台</span>
-                    <span class="machine-probability">72%</span>
-                </div>
-            </div>
+            <!-- ドロップダウンボタン -->
+            <button class="dropdown-button" onclick="toggleDropdown()">すべてを見る（全10台の勝率）</button>
 
-            <!-- イベント情報 -->
-            <div class="card event-card">
-                <h2>📢 イベント・おすすめ訪問日</h2>
-                <div class="event-item">
-                    🎯 <strong>明日8月29日</strong><br>
-                    設定変更日（高期待値）
-                </div>
-                <div class="event-item">
-                    📅 <strong>9月1日（月）</strong><br>
-                    スペシャルイベント開催
+            <!-- ドロップダウン内容 -->
+            <div class="dropdown-content" id="dropdownContent">
+                <div class="all-machines-grid">
+                    <!-- 1番台 -->
+                    <div class="machine-item" onclick="toggleExplanation(this)">
+                        <div class="machine-item-number">台番号：1番台</div>
+                        <div class="machine-item-probability">勝率 45%</div>
+                        <div class="machine-item-explanation">
+                            <strong>理由：</strong> 過去7日間のデータから平均消費額が高い傾向。店舗の通常営業日では回転数が低く、ユーザーの期待値がマイナス。おすすめ度は低めです。
+                        </div>
+                    </div>
+
+                    <!-- 2番台 -->
+                    <div class="machine-item" onclick="toggleExplanation(this)">
+                        <div class="machine-item-number">台番号：2番台</div>
+                        <div class="machine-item-probability">勝率 52%</div>
+                        <div class="machine-item-explanation">
+                            <strong>理由：</strong> 中程度の回転数と消費パターン。過去イベント日との比較では成績が不安定。現在は様子見段階の台です。
+                        </div>
+                    </div>
+
+                    <!-- 3番台 -->
+                    <div class="machine-item" onclick="toggleExplanation(this)">
+                        <div class="machine-item-number">台番号：3番台</div>
+                        <div class="machine-item-probability">勝率 58%</div>
+                        <div class="machine-item-explanation">
+                            <strong>理由：</strong> 最近の回転数増加傾向と回収パターンが良好。若干の期待値プラスが見込まれますが、トップ3ほどの確実性はありません。
+                        </div>
+                    </div>
+
+                    <!-- 4番台 -->
+                    <div class="machine-item" onclick="toggleExplanation(this)">
+                        <div class="machine-item-number">台番号：4番台</div>
+                        <div class="machine-item-probability">勝率 42%</div>
+                        <div class="machine-item-explanation">
+                            <strong>理由：</strong> 過去14日間のデータで連続赤字傾向。今週の流れも冴えないため、避けるべき台です。
+                        </div>
+                    </div>
+
+                    <!-- 5番台（1位） -->
+                    <div class="machine-item" onclick="toggleExplanation(this)">
+                        <div class="machine-item-number">台番号：5番台 🥇</div>
+                        <div class="machine-item-probability">勝率 78%</div>
+                        <div class="machine-item-explanation">
+                            <strong>理由：</strong> 過去10日間で連続プラス収支。回転数が安定して多く、消費パターンが良好。店舗の「よい流れ」エリアに位置しており、期待値が高いです。最優先推奨。
+                        </div>
+                    </div>
+
+                    <!-- 6番台 -->
+                    <div class="machine-item" onclick="toggleExplanation(this)">
+                        <div class="machine-item-number">台番号：6番台</div>
+                        <div class="machine-item-probability">勝率 48%</div>
+                        <div class="machine-item-explanation">
+                            <strong>理由：</strong> 浮き沈みが激しい不安定な台。勝率は中程度ですが予測精度が低いため、推奨できません。
+                        </div>
+                    </div>
+
+                    <!-- 7番台 -->
+                    <div class="machine-item" onclick="toggleExplanation(this)">
+                        <div class="machine-item-number">台番号：7番台</div>
+                        <div class="machine-item-probability">勝率 55%</div>
+                        <div class="machine-item-explanation">
+                            <strong>理由：</strong> 安定した中程度の成績。悪くはありませんが、トップ3と比較するとやや見劣りします。予備候補として検討対象です。
+                        </div>
+                    </div>
+
+                    <!-- 8番台 -->
+                    <div class="machine-item" onclick="toggleExplanation(this)">
+                        <div class="machine-item-number">台番号：8番台</div>
+                        <div class="machine-item-probability">勝率 39%</div>
+                        <div class="machine-item-explanation">
+                            <strong>理由：</strong> 過去データで一貫して低い勝率。回転数も少なく、おすすめできません。この台は避けましょう。
+                        </div>
+                    </div>
+
+                    <!-- 9番台 -->
+                    <div class="machine-item" onclick="toggleExplanation(this)">
+                        <div class="machine-item-number">台番号：9番台</div>
+                        <div class="machine-item-probability">勝率 61%</div>
+                        <div class="machine-item-explanation">
+                            <strong>理由：</strong> 安定した成績で、わりと良い勝率。ただし5番台と比較するとやや劣ります。第2、第3候補として有力です。
+                        </div>
+                    </div>
+
+                    <!-- 10番台 -->
+                    <div class="machine-item" onclick="toggleExplanation(this)">
+                        <div class="machine-item-number">台番号：10番台</div>
+                        <div class="machine-item-probability">勝率 44%</div>
+                        <div class="machine-item-explanation">
+                            <strong>理由：</strong> 低い勝率と不安定なパターン。期待値がマイナスと判定されています。おすすめできません。
+                        </div>
+                    </div>
+
+                    <!-- 11番台 -->
+                    <div class="machine-item" onclick="toggleExplanation(this)">
+                        <div class="machine-item-number">台番号：11番台</div>
+                        <div class="machine-item-probability">勝率 50%</div>
+                        <div class="machine-item-explanation">
+                            <strong>理由：</strong> ちょうど50%で完全な五分五分。データの安定性も低いため、推奨対象ではありません。
+                        </div>
+                    </div>
+
+                    <!-- 12番台（2位） -->
+                    <div class="machine-item" onclick="toggleExplanation(this)">
+                        <div class="machine-item-number">台番号：12番台 🥈</div>
+                        <div class="machine-item-probability">勝率 72%</div>
+                        <div class="machine-item-explanation">
+                            <strong>理由：</strong> 5番台に次ぐ高い勝率。過去9日間でプラス収支。回転数も良好で、期待値が高めです。第2候補として強くおすすめします。
+                        </div>
+                    </div>
+
+                    <!-- 13番台 -->
+                    <div class="machine-item" onclick="toggleExplanation(this)">
+                        <div class="machine-item-number">台番号：13番台</div>
+                        <div class="machine-item-probability">勝率 47%</div>
+                        <div class="machine-item-explanation">
+                            <strong>理由：</strong> やや低めの勝率。過去データで成績がばらついており、予測精度が不十分です。避けるべき台です。
+                        </div>
+                    </div>
+
+                    <!-- 14番台 -->
+                    <div class="machine-item" onclick="toggleExplanation(this)">
+                        <div class="machine-item-number">台番号：14番台</div>
+                        <div class="machine-item-probability">勝率 56%</div>
+                        <div class="machine-item-explanation">
+                            <strong>理由：</strong> 中程度から中上程度の勝率。安定性がありますが、トップ3ほどではありません。予備候補として検討対象。
+                        </div>
+                    </div>
+
+                    <!-- 15番台 -->
+                    <div class="machine-item" onclick="toggleExplanation(this)">
+                        <div class="machine-item-number">台番号：15番台</div>
+                        <div class="machine-item-probability">勝率 51%</div>
+                        <div class="machine-item-explanation">
+                            <strong>理由：</strong> わずかにプラスの勝率ですが、ばらつきが大きく信頼度が低い。おすすめできません。
+                        </div>
+                    </div>
+
+                    <!-- 16番台 -->
+                    <div class="machine-item" onclick="toggleExplanation(this)">
+                        <div class="machine-item-number">台番号：16番台</div>
+                        <div class="machine-item-probability">勝率 43%</div>
+                        <div class="machine-item-explanation">
+                            <strong>理由：</strong> 低い勝率が続いている台。回転数も少なく、期待値がマイナス。避けましょう。
+                        </div>
+                    </div>
+
+                    <!-- 17番台 -->
+                    <div class="machine-item" onclick="toggleExplanation(this)">
+                        <div class="machine-item-number">台番号：17番台</div>
+                        <div class="machine-item-probability">勝率 59%</div>
+                        <div class="machine-item-explanation">
+                            <strong>理由：</strong> 安定した中上程度の成績。良いパフォーマンスですが、トップ3と比較するとやや下です。第4〜5候補として検討の余地あり。
+                        </div>
+                    </div>
+
+                    <!-- 18番台（3位） -->
+                    <div class="machine-item" onclick="toggleExplanation(this)">
+                        <div class="machine-item-number">台番号：18番台 🥉</div>
+                        <div class="machine-item-probability">勝率 68%</div>
+                        <div class="machine-item-explanation">
+                            <strong>理由：</strong> 高い勝率で安定性も良好。過去8日間でほぼ黒字。5番台、12番台に次ぐ第3候補として強くおすすめします。
+                        </div>
+                    </div>
+
+                    <!-- 19番台 -->
+                    <div class="machine-item" onclick="toggleExplanation(this)">
+                        <div class="machine-item-number">台番号：19番台</div>
+                        <div class="machine-item-probability">勝率 46%</div>
+                        <div class="machine-item-explanation">
+                            <strong>理由：</strong> 低めの勝率で信頼度も低い。回転数が不安定。おすすめできません。
+                        </div>
+                    </div>
+
+                    <!-- 20番台 -->
+                    <div class="machine-item" onclick="toggleExplanation(this)">
+                        <div class="machine-item-number">台番号：20番台</div>
+                        <div class="machine-item-probability">勝率 49%</div>
+                        <div class="machine-item-explanation">
+                            <strong>理由：</strong> わずかに50%未満の勝率。データのばらつきが大きく、期待値判定が不確実です。避けるべき台です。
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- ナビゲーション -->
-        <div class="nav-buttons">
-            <a href="input.html" class="nav-button">
-                📝 データ入力ページへ
-            </a>
-            <a href="#analytics" class="nav-button">
-                📈 詳細分析を見る
-            </a>
-            <a href="#history" class="nav-button">
-                📋 訪問履歴
-            </a>
-            <a href="#settings" class="nav-button">
-                ⚙️ 設定
-            </a>
-        </div>
-
-        <!-- フッター -->
-        <div class="footer">
-            <p>© 2026 スロット勝台予測ツール | 新橋UNO専用</p>
+        <div class="nav-section">
+            <div class="nav-title">各種ページへのリンク</div>
+            <div class="nav-links">
+                <a href="input.html" class="nav-link">📋 台情報入力</a>
+                <a href="history.html" class="nav-link">📊 収支履歴管理</a>
+                <a href="analysis.html" class="nav-link">📈 詳細分析</a>
+                <a href="settings.html" class="nav-link">⚙️ 設定</a>
+            </div>
         </div>
     </div>
 
+    <!-- フッタ -->
+    <footer>
+        <p>&copy; 2026 スロット勝台予測ツール - 新橋UNO店 | All Rights Reserved</p>
+        <p>このツールは過去データに基づいた予測です。投資は自己責任で。</p>
+    </footer>
+
     <script>
-        // ここに後からJavaScriptロジックを追加
+        // ドロップダウン機能
+        function toggleDropdown() {
+            const dropdown = document.getElementById('dropdownContent');
+            const button = event.target;
+            dropdown.classList.toggle('active');
+            button.classList.toggle('active');
+        }
+
+        // 各台の説明を展開・閉じる
+        function toggleExplanation(element) {
+            element.classList.toggle('expanded');
+        }
+
+        // ページロード時の処理
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('ダッシュボード読み込み完了');
+            // 収支の動的更新（オプション）
+            // ここに必要な初期処理を追加
         });
     </script>
 </body>
